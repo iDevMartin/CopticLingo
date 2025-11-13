@@ -12,3 +12,6 @@ web-build/
 dist/
 .DS_Store
 *.log
+
+# Chat analysis
+src/data/chat_analysis/
