@@ -1,10 +1,12 @@
 # CopticLingo
 
-A Duolingo-style language learning app for Sahidic Coptic, built with React Native and Expo.
+A Duolingo-style language learning app for Bohairic Coptic, built with React Native and Expo.
 
 ## Overview
 
-CopticLingo is an interactive language learning application designed to teach Sahidic Coptic through gamified lessons, exercises, and achievement tracking. The app provides a comprehensive curriculum covering the alphabet, grammar, vocabulary, and Biblical passages.
+CopticLingo is an interactive language learning application designed to teach Bohairic Coptic through gamified lessons, exercises, and achievement tracking. The app provides a comprehensive curriculum covering the alphabet, grammar, vocabulary, and Biblical passages.
+
+Bohairic Coptic is the dialect currently used in the Coptic Orthodox Church for liturgy and hymns, making it the most practical dialect for modern learners.
 
 ## Features
 
