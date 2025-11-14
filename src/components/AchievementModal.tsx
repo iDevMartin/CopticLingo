@@ -105,10 +105,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 24,
     overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.3,
-    shadowRadius: 16,
+    boxShadow: '0px 8px 16px rgba(0, 0, 0, 0.3)',
     elevation: 10,
   },
   banner: {
@@ -154,10 +151,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 24,
     marginBottom: 24,
     borderRadius: 12,
-    shadowColor: '#58CC02',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
+    boxShadow: '0px 4px 8px rgba(88, 204, 2, 0.3)',
     elevation: 4,
   },
   buttonText: {
