@@ -3,6 +3,7 @@ import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-nativ
 import { Exercise } from '../../types';
 import { Button } from '../Button';
 import { Card } from '../Card';
+import { useTheme } from '../../theme/ThemeContext';
 
 interface TranslationExerciseProps {
   exercise: Exercise;
@@ -16,6 +17,7 @@ export const TranslationExercise: React.FC<TranslationExerciseProps> = ({
   const [userAnswer, setUserAnswer] = useState('');
   const [showResult, setShowResult] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
+  const { colors } = useTheme();
 
   const handleSubmit = () => {
     // Normalize strings for comparison (trim, lowercase, remove extra spaces)
@@ -27,13 +29,147 @@ export const TranslationExercise: React.FC<TranslationExerciseProps> = ({
 
     setIsCorrect(correct);
     setShowResult(true);
-    onAnswer(correct);
+    // Don't call onAnswer here - wait for user to press Continue
   };
 
   const handleContinue = () => {
+    // Call onAnswer when user presses Continue
+    onAnswer(isCorrect);
     setUserAnswer('');
     setShowResult(false);
   };
+
+  const styles = StyleSheet.create({
+    container: {
+      padding: 20,
+    },
+    title: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      marginBottom: 20,
+      color: colors.textPrimary,
+    },
+    copticBox: {
+      backgroundColor: colors.surfaceSecondary,
+      padding: 16,
+      borderRadius: 12,
+      marginBottom: 16,
+      alignItems: 'center',
+    },
+    copticText: {
+      fontSize: 28,
+      fontWeight: 'bold',
+      color: colors.primary,
+      textAlign: 'center',
+    },
+    question: {
+      fontSize: 16,
+      marginBottom: 20,
+      color: colors.textSecondary,
+    },
+    input: {
+      borderWidth: 2,
+      borderColor: colors.border,
+      borderRadius: 12,
+      padding: 16,
+      fontSize: 16,
+      marginBottom: 20,
+      minHeight: 60,
+      color: colors.textPrimary,
+      backgroundColor: colors.surface,
+    },
+    button: {
+      marginBottom: 16,
+    },
+    hintBox: {
+      backgroundColor: colors.warningLight,
+      padding: 16,
+      borderRadius: 12,
+      marginTop: 8,
+    },
+    hintTitle: {
+      fontSize: 14,
+      fontWeight: '600',
+      color: colors.warning,
+      marginBottom: 8,
+    },
+    hintOption: {
+      paddingVertical: 4,
+    },
+    hintText: {
+      fontSize: 14,
+      color: colors.warning,
+    },
+    resultContainer: {
+      marginTop: 20,
+    },
+    resultBox: {
+      padding: 20,
+      borderRadius: 12,
+      marginBottom: 20,
+    },
+    correct: {
+      backgroundColor: '#E8F5E9',
+      borderWidth: 2,
+      borderColor: colors.primary,
+    },
+    incorrect: {
+      backgroundColor: colors.errorLight,
+      borderWidth: 2,
+      borderColor: colors.error,
+    },
+    resultTitle: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      marginBottom: 12,
+    },
+    resultTitleCorrect: {
+      color: colors.primary,
+    },
+    resultTitleIncorrect: {
+      color: colors.error,
+    },
+    answerBox: {
+      marginBottom: 16,
+    },
+    answerLabel: {
+      fontSize: 14,
+      fontWeight: '600',
+      color: colors.textSecondary,
+      marginTop: 8,
+      marginBottom: 4,
+    },
+    userAnswerText: {
+      fontSize: 16,
+      color: colors.error,
+      marginBottom: 8,
+    },
+    correctAnswerText: {
+      fontSize: 16,
+      color: colors.primary,
+      fontWeight: '600',
+    },
+    explanationBox: {
+      marginTop: 12,
+      paddingTop: 12,
+      borderTopWidth: 1,
+      borderTopColor: colors.border,
+    },
+    explanationTitle: {
+      fontSize: 14,
+      fontWeight: '600',
+      color: colors.textSecondary,
+      marginBottom: 4,
+    },
+    explanationText: {
+      fontSize: 14,
+      color: colors.textPrimary,
+      lineHeight: 20,
+    },
+    continueButton: {
+      marginTop: 8,
+    },
+  });
 
   return (
     <Card style={styles.container}>
@@ -85,7 +221,7 @@ export const TranslationExercise: React.FC<TranslationExerciseProps> = ({
       ) : (
         <View style={styles.resultContainer}>
           <View style={[styles.resultBox, isCorrect ? styles.correct : styles.incorrect]}>
-            <Text style={styles.resultTitle}>
+            <Text style={[styles.resultTitle, isCorrect ? styles.resultTitleCorrect : styles.resultTitleIncorrect]}>
               {isCorrect ? '✓ Correct!' : '✗ Not quite right'}
             </Text>
 
@@ -113,130 +249,3 @@ export const TranslationExercise: React.FC<TranslationExerciseProps> = ({
     </Card>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    padding: 20,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    color: '#1f2937',
-  },
-  copticBox: {
-    backgroundColor: '#f3f4f6',
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 16,
-    alignItems: 'center',
-  },
-  copticText: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#58CC02',
-    textAlign: 'center',
-  },
-  question: {
-    fontSize: 16,
-    marginBottom: 20,
-    color: '#4b5563',
-  },
-  input: {
-    borderWidth: 2,
-    borderColor: '#e5e7eb',
-    borderRadius: 12,
-    padding: 16,
-    fontSize: 16,
-    marginBottom: 20,
-    minHeight: 60,
-    color: '#1f2937',
-    backgroundColor: '#fff',
-  },
-  button: {
-    marginBottom: 16,
-  },
-  hintBox: {
-    backgroundColor: '#fef3c7',
-    padding: 16,
-    borderRadius: 12,
-    marginTop: 8,
-  },
-  hintTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#92400e',
-    marginBottom: 8,
-  },
-  hintOption: {
-    paddingVertical: 4,
-  },
-  hintText: {
-    fontSize: 14,
-    color: '#78350f',
-  },
-  resultContainer: {
-    marginTop: 20,
-  },
-  resultBox: {
-    padding: 20,
-    borderRadius: 12,
-    marginBottom: 20,
-  },
-  correct: {
-    backgroundColor: '#d1fae5',
-    borderWidth: 2,
-    borderColor: '#10b981',
-  },
-  incorrect: {
-    backgroundColor: '#fee2e2',
-    borderWidth: 2,
-    borderColor: '#ef4444',
-  },
-  resultTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 12,
-    color: '#1f2937',
-  },
-  answerBox: {
-    marginBottom: 16,
-  },
-  answerLabel: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#6b7280',
-    marginTop: 8,
-    marginBottom: 4,
-  },
-  userAnswerText: {
-    fontSize: 16,
-    color: '#ef4444',
-    marginBottom: 8,
-  },
-  correctAnswerText: {
-    fontSize: 16,
-    color: '#10b981',
-    fontWeight: '600',
-  },
-  explanationBox: {
-    marginTop: 12,
-    paddingTop: 12,
-    borderTopWidth: 1,
-    borderTopColor: '#d1d5db',
-  },
-  explanationTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#6b7280',
-    marginBottom: 4,
-  },
-  explanationText: {
-    fontSize: 14,
-    color: '#4b5563',
-    lineHeight: 20,
-  },
-  continueButton: {
-    marginTop: 8,
-  },
-});
