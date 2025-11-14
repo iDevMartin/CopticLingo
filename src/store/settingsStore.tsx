@@ -6,10 +6,12 @@ interface SettingsState {
   soundEffectsEnabled: boolean;
   notificationsEnabled: boolean;
   dailyReminderEnabled: boolean;
+  developerModeEnabled: boolean;
   setAudioEnabled: (enabled: boolean) => void;
   setSoundEffectsEnabled: (enabled: boolean) => void;
   setNotificationsEnabled: (enabled: boolean) => void;
   setDailyReminderEnabled: (enabled: boolean) => void;
+  setDeveloperModeEnabled: (enabled: boolean) => void;
 }
 
 const initialSettings = {
@@ -17,6 +19,7 @@ const initialSettings = {
   soundEffectsEnabled: true,
   notificationsEnabled: true,
   dailyReminderEnabled: true,
+  developerModeEnabled: false,
 };
 
 const SettingsContext = createContext<SettingsState | undefined>(undefined);
@@ -67,6 +70,10 @@ export const SettingsProvider: React.FC<{ children: ReactNode }> = ({ children }
     setSettings(prev => ({ ...prev, dailyReminderEnabled: enabled }));
   };
 
+  const setDeveloperModeEnabled = (enabled: boolean) => {
+    setSettings(prev => ({ ...prev, developerModeEnabled: enabled }));
+  };
+
   if (!isLoaded) {
     return null;
   }
@@ -79,6 +86,7 @@ export const SettingsProvider: React.FC<{ children: ReactNode }> = ({ children }
         setSoundEffectsEnabled,
         setNotificationsEnabled,
         setDailyReminderEnabled,
+        setDeveloperModeEnabled,
       }}
     >
       {children}

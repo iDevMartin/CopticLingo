@@ -19,11 +19,46 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ onBack }) => {
     soundEffectsEnabled,
     notificationsEnabled,
     dailyReminderEnabled,
+    developerModeEnabled,
     setAudioEnabled,
     setSoundEffectsEnabled,
     setNotificationsEnabled,
     setDailyReminderEnabled,
+    setDeveloperModeEnabled,
   } = useSettingsStore();
+
+  const [versionTapCount, setVersionTapCount] = useState(0);
+  const [lastTapTime, setLastTapTime] = useState(0);
+
+  const handleVersionTap = () => {
+    const now = Date.now();
+    const timeSinceLastTap = now - lastTapTime;
+
+    // Reset counter if more than 1 second has passed since last tap
+    if (timeSinceLastTap > 1000) {
+      setVersionTapCount(1);
+    } else {
+      const newCount = versionTapCount + 1;
+      setVersionTapCount(newCount);
+
+      if (newCount === 5) {
+        // Toggle developer mode
+        const newDevMode = !developerModeEnabled;
+        setDeveloperModeEnabled(newDevMode);
+        setVersionTapCount(0);
+
+        Alert.alert(
+          newDevMode ? 'Developer Mode Enabled' : 'Developer Mode Disabled',
+          newDevMode
+            ? 'All lessons are now unlocked for testing. Progress will not be saved and XP/achievements will not be earned.'
+            : 'Developer mode has been disabled. Normal progress tracking resumed.',
+          [{ text: 'OK' }]
+        );
+      }
+    }
+
+    setLastTapTime(now);
+  };
 
   const handleResetProgress = () => {
     Alert.alert(
@@ -192,10 +227,12 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ onBack }) => {
         <Card style={styles.section}>
           <Text style={styles.sectionTitle}>About</Text>
 
-          <TouchableOpacity style={styles.actionRow}>
+          <TouchableOpacity style={styles.actionRow} onPress={handleVersionTap}>
             <View style={styles.actionInfo}>
               <Text style={styles.actionLabel}>Version</Text>
-              <Text style={styles.actionDescription}>1.0.0</Text>
+              <Text style={styles.actionDescription}>
+                1.0.0{developerModeEnabled ? ' (Developer Mode)' : ''}
+              </Text>
             </View>
           </TouchableOpacity>
 
