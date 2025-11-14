@@ -64,6 +64,8 @@ Bohairic Coptic is the dialect currently used in the Coptic Orthodox Church for 
 - **Review Screen** - Practice mistakes and due reviews with spaced repetition
 - **Settings Screen** - Customize app preferences and reset progress
 - **Lesson Result Screen** - See performance summary with XP earned
+- **Dark Mode** - Full theme support for light and dark modes with automatic switching
+- **Developer Mode** - Debug mode for testing with all lessons unlocked (progress not saved)
 
 ### 🔊 Audio Support
 
