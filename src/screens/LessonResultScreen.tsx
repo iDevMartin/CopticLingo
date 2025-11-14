@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Button } from '../components';
+import { useSettingsStore } from '../store/settingsStore';
 
 interface LessonResultScreenProps {
   correctCount: number;
@@ -15,6 +16,7 @@ export const LessonResultScreen: React.FC<LessonResultScreenProps> = ({
   xpEarned,
   onContinue,
 }) => {
+  const { developerModeEnabled } = useSettingsStore();
   const percentage = Math.round((correctCount / totalCount) * 100);
   const passed = percentage >= 60;
 
@@ -23,6 +25,12 @@ export const LessonResultScreen: React.FC<LessonResultScreenProps> = ({
       <View style={styles.content}>
         <Text style={styles.emoji}>{passed ? '🎉' : '😔'}</Text>
         <Text style={styles.title}>{passed ? 'Great Job!' : 'Keep Practicing!'}</Text>
+
+        {developerModeEnabled && (
+          <View style={styles.devModeNotice}>
+            <Text style={styles.devModeText}>🔧 Developer Mode - No Progress Saved</Text>
+          </View>
+        )}
 
         <View style={styles.statsContainer}>
           <View style={styles.statBox}>
@@ -38,7 +46,9 @@ export const LessonResultScreen: React.FC<LessonResultScreenProps> = ({
           </View>
 
           <View style={styles.statBox}>
-            <Text style={[styles.statValue, styles.xpValue]}>+{xpEarned}</Text>
+            <Text style={[styles.statValue, styles.xpValue, developerModeEnabled && styles.disabledText]}>
+              {developerModeEnabled ? '—' : `+${xpEarned}`}
+            </Text>
             <Text style={styles.statLabel}>XP Earned</Text>
           </View>
         </View>
@@ -98,6 +108,23 @@ const styles = StyleSheet.create({
   statLabel: {
     fontSize: 14,
     color: '#777777',
+    fontWeight: '600',
+  },
+  disabledText: {
+    color: '#CCCCCC',
+  },
+  devModeNotice: {
+    backgroundColor: '#FFF3CD',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: '#FFC107',
+  },
+  devModeText: {
+    fontSize: 14,
+    color: '#856404',
+    textAlign: 'center',
     fontWeight: '600',
   },
   encouragementBox: {

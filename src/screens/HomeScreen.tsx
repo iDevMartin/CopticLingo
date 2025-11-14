@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-nati
 import { LessonNode, Card } from '../components';
 import { copticUnits } from '../data/lessons';
 import { useProgressStore } from '../store/progressStore';
+import { useSettingsStore } from '../store/settingsStore';
 
 interface HomeScreenProps {
   onLessonPress: (lessonId: string) => void;
@@ -18,9 +19,15 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   onSettingsPress,
 }) => {
   const { completedLessons, totalXP, currentStreak, level } = useProgressStore();
+  const { developerModeEnabled } = useSettingsStore();
 
   const getLessonStatus = (lessonId: string, lessonOrder: number, unitLessons: any[]) => {
     const isCompleted = completedLessons.includes(lessonId);
+
+    // In developer mode, unlock all lessons
+    if (developerModeEnabled) {
+      return { locked: false, completed: isCompleted };
+    }
 
     if (lessonOrder === 1) {
       return { locked: false, completed: isCompleted };
@@ -33,6 +40,11 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   };
 
   const getUnitLocked = (unitOrder: number) => {
+    // In developer mode, unlock all units
+    if (developerModeEnabled) {
+      return false;
+    }
+
     if (unitOrder === 1) return false;
 
     const previousUnit = copticUnits[unitOrder - 2];

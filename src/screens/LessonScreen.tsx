@@ -5,6 +5,7 @@ import { LessonExercises } from '../components/exercises/LessonExercises';
 import { LessonResultScreen } from './LessonResultScreen';
 import { useProgressStore } from '../store/progressStore';
 import { useAchievementStore } from '../store/achievementStore';
+import { useSettingsStore } from '../store/settingsStore';
 import { checkAchievements } from '../utils/achievementChecker';
 import { AchievementModal } from '../components';
 import { Achievement } from '../types';
@@ -20,6 +21,7 @@ export const LessonScreen: React.FC<LessonScreenProps> = ({ lessonId, onComplete
   const [results, setResults] = useState({ correctCount: 0, totalCount: 0 });
   const { completeLesson, updateStreak, completedLessons, currentStreak, level, vocabularyLearned } = useProgressStore();
   const { achievements, unlockAchievement } = useAchievementStore();
+  const { developerModeEnabled } = useSettingsStore();
   const [unlockedAchievement, setUnlockedAchievement] = useState<Achievement | null>(null);
   const [showAchievementModal, setShowAchievementModal] = useState(false);
 
@@ -34,6 +36,11 @@ export const LessonScreen: React.FC<LessonScreenProps> = ({ lessonId, onComplete
   const handleLessonComplete = (correctCount: number, totalCount: number) => {
     setResults({ correctCount, totalCount });
     setShowResults(true);
+
+    // Skip progress tracking in developer mode
+    if (developerModeEnabled) {
+      return;
+    }
 
     const percentage = (correctCount / totalCount) * 100;
     if (percentage >= 60) {
