@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { LessonNode, Card } from '../components';
 import { copticUnits } from '../data/lessons';
 import { useProgressStore } from '../store/progressStore';
@@ -22,6 +22,19 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   const { completedLessons, totalXP, currentStreak, level } = useProgressStore();
   const { developerModeEnabled } = useSettingsStore();
   const { colors } = useTheme();
+
+  const handleDevModePress = () => {
+    Alert.alert(
+      'Developer Mode',
+      'Developer/Debug mode is currently enabled.\n\n' +
+      '• All lessons and units are unlocked\n' +
+      '• Completed lessons do NOT count towards XP progress\n' +
+      '• Achievements will NOT be unlocked\n\n' +
+      'This mode is intended for testing and development purposes only. ' +
+      'Disable it in Settings to track your real progress.',
+      [{ text: 'OK' }]
+    );
+  };
 
   const getLessonStatus = (lessonId: string, lessonOrder: number, unitLessons: any[]) => {
     const isCompleted = completedLessons.includes(lessonId);
@@ -82,6 +95,77 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
       color: colors.textSecondary,
       marginTop: 2,
     },
+    headerActions: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 12,
+    },
+    card: {
+      backgroundColor: colors.surface,
+      borderRadius: 16,
+      padding: 16,
+      borderWidth: 2,
+      borderColor: colors.border,
+    },
+    devModeCard: {
+      paddingHorizontal: 16,
+      paddingVertical: 8,
+      backgroundColor: '#6B46C1',
+      borderColor: '#7C3AED',
+    },
+    devModeContent: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 6,
+      minHeight: 40,
+    },
+    devModeIcon: {
+      fontSize: 20,
+    },
+    devModeText: {
+      fontSize: 18,
+      fontWeight: '700',
+      color: '#FFFFFF',
+    },
+    streakCard: {
+      paddingHorizontal: 16,
+      paddingVertical: 8,
+    },
+    streakContent: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 6,
+      minHeight: 40,
+    },
+    streakEmoji: {
+      fontSize: 20,
+    },
+    streakText: {
+      fontSize: 18,
+      fontWeight: '700',
+      color: colors.primary,
+    },
+    practiceCard: {
+      paddingHorizontal: 16,
+      paddingVertical: 8,
+    },
+    practiceContent: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 6,
+      minHeight: 40,
+    },
+    practiceIcon: {
+      fontSize: 20,
+    },
+    practiceLabel: {
+      fontSize: 14,
+      fontWeight: '600',
+      color: colors.textPrimary,
+    },
     xpCard: {
       paddingHorizontal: 16,
       paddingVertical: 8,
@@ -98,48 +182,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
       fontSize: 18,
       fontWeight: '700',
       color: colors.primary,
-    },
-    streakBanner: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundColor: '#FFD700',
-      paddingVertical: 12,
-    },
-    streakEmoji: {
-      fontSize: 20,
-      marginRight: 8,
-    },
-    streakText: {
-      fontSize: 16,
-      fontWeight: '700',
-      color: '#3C3C3C',
-    },
-    quickActions: {
-      flexDirection: 'row',
-      paddingHorizontal: 20,
-      paddingVertical: 16,
-      gap: 12,
-      backgroundColor: colors.surface,
-    },
-    actionButton: {
-      flex: 1,
-      backgroundColor: colors.surfaceSecondary,
-      paddingVertical: 16,
-      paddingHorizontal: 12,
-      borderRadius: 12,
-      alignItems: 'center',
-      borderWidth: 2,
-      borderColor: colors.border,
-    },
-    actionIcon: {
-      fontSize: 24,
-      marginBottom: 4,
-    },
-    actionLabel: {
-      fontSize: 14,
-      fontWeight: '600',
-      color: colors.textPrimary,
     },
     scrollView: {
       flex: 1,
@@ -179,32 +221,38 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           <Text style={styles.headerTitle}>CopticLingo</Text>
           <Text style={styles.headerSubtitle}>ⲙⲁⲣⲓ ⲉⲣϩⲱⲃ!</Text>
         </View>
-        <Card style={styles.xpCard} onPress={onProfilePress}>
-          <View style={styles.xpContent}>
-            <Text style={styles.xpLabel}>Level {level}</Text>
-            <Text style={styles.xpValue}>{totalXP} XP</Text>
-          </View>
-        </Card>
-      </View>
-
-      {/* Streak Banner */}
-      {currentStreak > 0 && (
-        <View style={styles.streakBanner}>
-          <Text style={styles.streakEmoji}>🔥</Text>
-          <Text style={styles.streakText}>{currentStreak} day streak!</Text>
+        <View style={styles.headerActions}>
+          {developerModeEnabled && (
+            <TouchableOpacity onPress={handleDevModePress} activeOpacity={0.8}>
+              <View style={[styles.card, styles.devModeCard]}>
+                <View style={styles.devModeContent}>
+                  <Text style={styles.devModeIcon}>🛠️</Text>
+                  <Text style={styles.devModeText}>Dev</Text>
+                </View>
+              </View>
+            </TouchableOpacity>
+          )}
+          {currentStreak > 0 && (
+            <Card style={styles.streakCard}>
+              <View style={styles.streakContent}>
+                <Text style={styles.streakEmoji}>🔥</Text>
+                <Text style={styles.streakText}>{currentStreak}</Text>
+              </View>
+            </Card>
+          )}
+          <Card style={styles.practiceCard} onPress={onReviewPress}>
+            <View style={styles.practiceContent}>
+              <Text style={styles.practiceIcon}>⚡</Text>
+              <Text style={styles.practiceLabel}>Practice</Text>
+            </View>
+          </Card>
+          <Card style={styles.xpCard} onPress={onProfilePress}>
+            <View style={styles.xpContent}>
+              <Text style={styles.xpLabel}>Level {level}</Text>
+              <Text style={styles.xpValue}>{totalXP} XP</Text>
+            </View>
+          </Card>
         </View>
-      )}
-
-      {/* Quick Actions */}
-      <View style={styles.quickActions}>
-        <TouchableOpacity style={styles.actionButton} onPress={onReviewPress}>
-          <Text style={styles.actionIcon}>⚡</Text>
-          <Text style={styles.actionLabel}>Practice</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.actionButton} onPress={onSettingsPress}>
-          <Text style={styles.actionIcon}>⚙️</Text>
-          <Text style={styles.actionLabel}>Settings</Text>
-        </TouchableOpacity>
       </View>
 
       {/* Skill Tree */}
