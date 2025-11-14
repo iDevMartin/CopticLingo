@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-nati
 import { Exercise } from '../../types';
 import { Button } from '../Button';
 import { Card } from '../Card';
+import { useTheme } from '../../theme/ThemeContext';
 
 interface SentenceBuildingProps {
   exercise: Exercise;
@@ -19,6 +20,7 @@ export const SentenceBuildingExercise: React.FC<SentenceBuildingProps> = ({
   );
   const [showResult, setShowResult] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
+  const { colors } = useTheme();
 
   const handleWordSelect = (word: string, index: number, fromAvailable: boolean) => {
     if (showResult) return;
@@ -43,14 +45,157 @@ export const SentenceBuildingExercise: React.FC<SentenceBuildingProps> = ({
 
     setIsCorrect(correct);
     setShowResult(true);
-    onAnswer(correct);
+    // Don't call onAnswer here - wait for user to press Continue
   };
 
   const handleContinue = () => {
+    // Call onAnswer when user presses Continue
+    onAnswer(isCorrect);
     setSelectedWords([]);
     setAvailableWords(exercise.wordBank ? shuffleArray([...exercise.wordBank]) : []);
     setShowResult(false);
   };
+
+  const styles = StyleSheet.create({
+    container: {
+      padding: 20,
+    },
+    title: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      marginBottom: 12,
+      color: colors.textPrimary,
+    },
+    question: {
+      fontSize: 16,
+      marginBottom: 24,
+      color: colors.textSecondary,
+    },
+    answerArea: {
+      marginBottom: 24,
+    },
+    wordBankArea: {
+      marginBottom: 24,
+    },
+    areaLabel: {
+      fontSize: 14,
+      fontWeight: '600',
+      color: colors.textSecondary,
+      marginBottom: 12,
+    },
+    wordsContainer: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: 8,
+      minHeight: 60,
+      backgroundColor: colors.surfaceSecondary,
+      padding: 12,
+      borderRadius: 12,
+      borderWidth: 2,
+      borderColor: colors.border,
+    },
+    placeholder: {
+      fontSize: 14,
+      color: colors.textTertiary,
+      fontStyle: 'italic',
+      alignSelf: 'center',
+      textAlign: 'center',
+      flex: 1,
+    },
+    wordChip: {
+      paddingHorizontal: 16,
+      paddingVertical: 10,
+      borderRadius: 20,
+      borderWidth: 2,
+    },
+    selectedWordChip: {
+      backgroundColor: colors.infoLight,
+      borderColor: colors.info,
+    },
+    availableWordChip: {
+      backgroundColor: colors.surface,
+      borderColor: colors.border,
+    },
+    correctChip: {
+      backgroundColor: '#E8F5E9',
+      borderColor: colors.primary,
+    },
+    incorrectChip: {
+      backgroundColor: colors.errorLight,
+      borderColor: colors.error,
+    },
+    wordText: {
+      fontSize: 16,
+      color: colors.textPrimary,
+      fontWeight: '500',
+    },
+    button: {
+      marginTop: 8,
+    },
+    resultContainer: {
+      marginTop: 20,
+    },
+    resultBox: {
+      padding: 20,
+      borderRadius: 12,
+      marginBottom: 20,
+    },
+    correct: {
+      backgroundColor: '#E8F5E9',
+      borderWidth: 2,
+      borderColor: colors.primary,
+    },
+    incorrect: {
+      backgroundColor: colors.errorLight,
+      borderWidth: 2,
+      borderColor: colors.error,
+    },
+    resultTitle: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      marginBottom: 12,
+    },
+    resultTitleCorrect: {
+      color: colors.primary,
+    },
+    resultTitleIncorrect: {
+      color: colors.error,
+    },
+    answerBox: {
+      marginBottom: 16,
+    },
+    answerLabel: {
+      fontSize: 14,
+      fontWeight: '600',
+      color: colors.textSecondary,
+      marginBottom: 4,
+    },
+    correctAnswerText: {
+      fontSize: 16,
+      color: colors.primary,
+      fontWeight: '600',
+    },
+    explanationBox: {
+      marginTop: 12,
+      paddingTop: 12,
+      borderTopWidth: 1,
+      borderTopColor: colors.border,
+    },
+    explanationTitle: {
+      fontSize: 14,
+      fontWeight: '600',
+      color: colors.textSecondary,
+      marginBottom: 4,
+    },
+    explanationText: {
+      fontSize: 14,
+      color: colors.textSecondary,
+      lineHeight: 20,
+    },
+    continueButton: {
+      marginTop: 8,
+    },
+  });
 
   return (
     <Card style={styles.container}>
@@ -110,7 +255,7 @@ export const SentenceBuildingExercise: React.FC<SentenceBuildingProps> = ({
       ) : (
         <View style={styles.resultContainer}>
           <View style={[styles.resultBox, isCorrect ? styles.correct : styles.incorrect]}>
-            <Text style={styles.resultTitle}>
+            <Text style={[styles.resultTitle, isCorrect ? styles.resultTitleCorrect : styles.resultTitleIncorrect]}>
               {isCorrect ? '✓ Perfect!' : '✗ Not quite right'}
             </Text>
 
@@ -143,141 +288,3 @@ function shuffleArray<T>(array: T[]): T[] {
     const j = Math.floor(Math.random() * (i + 1));
     [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
   }
-  return newArray;
-}
-
-const styles = StyleSheet.create({
-  container: {
-    padding: 20,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 12,
-    color: '#1f2937',
-  },
-  question: {
-    fontSize: 16,
-    marginBottom: 24,
-    color: '#4b5563',
-  },
-  answerArea: {
-    marginBottom: 24,
-  },
-  wordBankArea: {
-    marginBottom: 24,
-  },
-  areaLabel: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#6b7280',
-    marginBottom: 12,
-  },
-  wordsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-    minHeight: 60,
-    backgroundColor: '#f9fafb',
-    padding: 12,
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: '#e5e7eb',
-  },
-  placeholder: {
-    fontSize: 14,
-    color: '#9ca3af',
-    fontStyle: 'italic',
-    alignSelf: 'center',
-    textAlign: 'center',
-    flex: 1,
-  },
-  wordChip: {
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 20,
-    borderWidth: 2,
-  },
-  selectedWordChip: {
-    backgroundColor: '#dbeafe',
-    borderColor: '#3b82f6',
-  },
-  availableWordChip: {
-    backgroundColor: '#fff',
-    borderColor: '#d1d5db',
-  },
-  correctChip: {
-    backgroundColor: '#d1fae5',
-    borderColor: '#10b981',
-  },
-  incorrectChip: {
-    backgroundColor: '#fee2e2',
-    borderColor: '#ef4444',
-  },
-  wordText: {
-    fontSize: 16,
-    color: '#1f2937',
-    fontWeight: '500',
-  },
-  button: {
-    marginTop: 8,
-  },
-  resultContainer: {
-    marginTop: 20,
-  },
-  resultBox: {
-    padding: 20,
-    borderRadius: 12,
-    marginBottom: 20,
-  },
-  correct: {
-    backgroundColor: '#d1fae5',
-    borderWidth: 2,
-    borderColor: '#10b981',
-  },
-  incorrect: {
-    backgroundColor: '#fee2e2',
-    borderWidth: 2,
-    borderColor: '#ef4444',
-  },
-  resultTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 12,
-    color: '#1f2937',
-  },
-  answerBox: {
-    marginBottom: 16,
-  },
-  answerLabel: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#6b7280',
-    marginBottom: 4,
-  },
-  correctAnswerText: {
-    fontSize: 16,
-    color: '#10b981',
-    fontWeight: '600',
-  },
-  explanationBox: {
-    marginTop: 12,
-    paddingTop: 12,
-    borderTopWidth: 1,
-    borderTopColor: '#d1d5db',
-  },
-  explanationTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#6b7280',
-    marginBottom: 4,
-  },
-  explanationText: {
-    fontSize: 14,
-    color: '#4b5563',
-    lineHeight: 20,
-  },
-  continueButton: {
-    marginTop: 8,
-  },
-});

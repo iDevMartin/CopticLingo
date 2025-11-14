@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { useTheme } from '../theme/ThemeContext';
 
 interface LessonNodeProps {
   title: string;
@@ -18,6 +19,42 @@ export const LessonNode: React.FC<LessonNodeProps> = ({
   current = false,
   onPress,
 }) => {
+  const { colors } = useTheme();
+
+  const styles = StyleSheet.create({
+    container: {
+      alignItems: 'center',
+      marginVertical: 12,
+      width: 100,
+    },
+    node: {
+      width: 70,
+      height: 70,
+      borderRadius: 35,
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderWidth: 3,
+      borderColor: 'transparent',
+    },
+    currentNode: {
+      borderColor: '#FFD700',
+      borderWidth: 4,
+    },
+    icon: {
+      fontSize: 32,
+    },
+    lockedIcon: {
+      fontSize: 28,
+    },
+    title: {
+      marginTop: 8,
+      fontSize: 13,
+      fontWeight: '600',
+      color: colors.textPrimary,
+      textAlign: 'center',
+    },
+  });
+
   return (
     <View style={styles.container}>
       <TouchableOpacity
@@ -39,38 +76,3 @@ export const LessonNode: React.FC<LessonNodeProps> = ({
       </Text>
     </View>
   );
-};
-
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    marginVertical: 12,
-    width: 100,
-  },
-  node: {
-    width: 70,
-    height: 70,
-    borderRadius: 35,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 3,
-    borderColor: 'transparent',
-  },
-  currentNode: {
-    borderColor: '#FFD700',
-    borderWidth: 4,
-  },
-  icon: {
-    fontSize: 32,
-  },
-  lockedIcon: {
-    fontSize: 28,
-  },
-  title: {
-    marginTop: 8,
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#3C3C3C',
-    textAlign: 'center',
-  },
-});
