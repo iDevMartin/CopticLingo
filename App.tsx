@@ -15,6 +15,7 @@ import { ProgressProvider } from './src/store/progressStore.tsx';
 import { AchievementProvider } from './src/store/achievementStore.tsx';
 import { ReviewProvider } from './src/store/reviewStore.tsx';
 import { SettingsProvider } from './src/store/settingsStore.tsx';
+import { ThemeProvider } from './src/theme/ThemeContext.tsx';
 
 type Screen = 'welcome' | 'onboarding' | 'home' | 'lesson' | 'profile' | 'review' | 'settings' | 'reviewLesson';
 
@@ -163,14 +164,16 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <SettingsProvider>
-        <ProgressProvider>
-          <AchievementProvider>
-            <ReviewProvider>
-              <StatusBar style="auto" />
-              {renderScreen()}
-            </ReviewProvider>
-          </AchievementProvider>
-        </ProgressProvider>
+        <ThemeProvider>
+          <ProgressProvider>
+            <AchievementProvider>
+              <ReviewProvider>
+                <StatusBar style="auto" />
+                {renderScreen()}
+              </ReviewProvider>
+            </AchievementProvider>
+          </ProgressProvider>
+        </ThemeProvider>
       </SettingsProvider>
     </SafeAreaProvider>
   );

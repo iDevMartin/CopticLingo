@@ -5,6 +5,7 @@ import { useProgressStore } from '../store/progressStore';
 import { useAchievementStore } from '../store/achievementStore';
 import { useReviewStore } from '../store/reviewStore';
 import { useSettingsStore } from '../store/settingsStore';
+import { useTheme } from '../theme/ThemeContext';
 
 interface SettingsScreenProps {
   onBack: () => void;
@@ -14,17 +15,20 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ onBack }) => {
   const { resetProgress, totalXP, level } = useProgressStore();
   const { achievements } = useAchievementStore();
   const { reviewItems } = useReviewStore();
+  const { colors } = useTheme();
   const {
     audioEnabled,
     soundEffectsEnabled,
     notificationsEnabled,
     dailyReminderEnabled,
     developerModeEnabled,
+    darkModeEnabled,
     setAudioEnabled,
     setSoundEffectsEnabled,
     setNotificationsEnabled,
     setDailyReminderEnabled,
     setDeveloperModeEnabled,
+    setDarkModeEnabled,
   } = useSettingsStore();
 
   const [versionTapCount, setVersionTapCount] = useState(0);
@@ -83,6 +87,144 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ onBack }) => {
 
   const unlockedAchievementsCount = achievements.filter(a => a.unlocked).length;
 
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    header: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingHorizontal: 20,
+      paddingTop: 60,
+      paddingBottom: 20,
+      backgroundColor: colors.surface,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    backButton: {
+      width: 40,
+      height: 40,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    backIcon: {
+      fontSize: 24,
+      color: colors.textPrimary,
+    },
+    headerTitle: {
+      fontSize: 20,
+      fontWeight: '700',
+      color: colors.textPrimary,
+    },
+    placeholder: {
+      width: 40,
+    },
+    content: {
+      flex: 1,
+    },
+    scrollContent: {
+      padding: 20,
+    },
+    section: {
+      padding: 20,
+      marginBottom: 16,
+    },
+    sectionTitle: {
+      fontSize: 18,
+      fontWeight: '700',
+      color: colors.textPrimary,
+      marginBottom: 16,
+    },
+    infoRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingVertical: 8,
+    },
+    infoLabel: {
+      fontSize: 16,
+      color: colors.textSecondary,
+    },
+    infoValue: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: colors.textPrimary,
+    },
+    settingRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingVertical: 8,
+    },
+    settingInfo: {
+      flex: 1,
+      marginRight: 16,
+    },
+    settingLabel: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: colors.textPrimary,
+      marginBottom: 4,
+    },
+    settingDescription: {
+      fontSize: 14,
+      color: colors.textTertiary,
+      lineHeight: 18,
+    },
+    actionRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingVertical: 8,
+    },
+    actionInfo: {
+      flex: 1,
+    },
+    actionLabel: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: colors.textPrimary,
+      marginBottom: 4,
+    },
+    actionDescription: {
+      fontSize: 14,
+      color: colors.textTertiary,
+    },
+    actionArrow: {
+      fontSize: 24,
+      color: colors.textDisabled,
+    },
+    divider: {
+      height: 1,
+      backgroundColor: colors.border,
+      marginVertical: 12,
+    },
+    dangerSection: {
+      borderWidth: 2,
+      borderColor: '#fecaca',
+      backgroundColor: '#fef2f2',
+    },
+    dangerTitle: {
+      color: '#dc2626',
+    },
+    dangerButton: {
+      borderColor: '#ef4444',
+      backgroundColor: colors.surface,
+    },
+    dangerWarning: {
+      fontSize: 12,
+      color: '#991b1b',
+      textAlign: 'center',
+      marginTop: 12,
+      lineHeight: 16,
+    },
+    footer: {
+      height: 40,
+    },
+  });
+
   return (
     <View style={styles.container}>
       {/* Header */}
@@ -125,6 +267,26 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ onBack }) => {
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Review Items</Text>
             <Text style={styles.infoValue}>{reviewItems.length}</Text>
+          </View>
+        </Card>
+
+        {/* Audio & Sound */}
+        <Card style={styles.section}>
+          <Text style={styles.sectionTitle}>Appearance</Text>
+
+          <View style={styles.settingRow}>
+            <View style={styles.settingInfo}>
+              <Text style={styles.settingLabel}>Dark Mode</Text>
+              <Text style={styles.settingDescription}>
+                Use dark theme for reduced eye strain
+              </Text>
+            </View>
+            <Switch
+              value={darkModeEnabled}
+              onValueChange={setDarkModeEnabled}
+              trackColor={{ false: '#d1d5db', true: '#86efac' }}
+              thumbColor={darkModeEnabled ? '#22c55e' : '#f3f4f6'}
+            />
           </View>
         </Card>
 
@@ -278,141 +440,3 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ onBack }) => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f9fafb',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingTop: 60,
-    paddingBottom: 20,
-    backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
-  },
-  backButton: {
-    width: 40,
-    height: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  backIcon: {
-    fontSize: 24,
-    color: '#1f2937',
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#1f2937',
-  },
-  placeholder: {
-    width: 40,
-  },
-  content: {
-    flex: 1,
-  },
-  scrollContent: {
-    padding: 20,
-  },
-  section: {
-    padding: 20,
-    marginBottom: 16,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#1f2937',
-    marginBottom: 16,
-  },
-  infoRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 8,
-  },
-  infoLabel: {
-    fontSize: 16,
-    color: '#4b5563',
-  },
-  infoValue: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#1f2937',
-  },
-  settingRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 8,
-  },
-  settingInfo: {
-    flex: 1,
-    marginRight: 16,
-  },
-  settingLabel: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#1f2937',
-    marginBottom: 4,
-  },
-  settingDescription: {
-    fontSize: 14,
-    color: '#6b7280',
-    lineHeight: 18,
-  },
-  actionRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 8,
-  },
-  actionInfo: {
-    flex: 1,
-  },
-  actionLabel: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#1f2937',
-    marginBottom: 4,
-  },
-  actionDescription: {
-    fontSize: 14,
-    color: '#6b7280',
-  },
-  actionArrow: {
-    fontSize: 24,
-    color: '#9ca3af',
-  },
-  divider: {
-    height: 1,
-    backgroundColor: '#e5e7eb',
-    marginVertical: 12,
-  },
-  dangerSection: {
-    borderWidth: 2,
-    borderColor: '#fecaca',
-    backgroundColor: '#fef2f2',
-  },
-  dangerTitle: {
-    color: '#dc2626',
-  },
-  dangerButton: {
-    borderColor: '#ef4444',
-    backgroundColor: '#fff',
-  },
-  dangerWarning: {
-    fontSize: 12,
-    color: '#991b1b',
-    textAlign: 'center',
-    marginTop: 12,
-    lineHeight: 16,
-  },
-  footer: {
-    height: 40,
-  },
-});

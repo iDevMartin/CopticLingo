@@ -4,6 +4,7 @@ import { LessonNode, Card } from '../components';
 import { copticUnits } from '../data/lessons';
 import { useProgressStore } from '../store/progressStore';
 import { useSettingsStore } from '../store/settingsStore';
+import { useTheme } from '../theme/ThemeContext';
 
 interface HomeScreenProps {
   onLessonPress: (lessonId: string) => void;
@@ -20,6 +21,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 }) => {
   const { completedLessons, totalXP, currentStreak, level } = useProgressStore();
   const { developerModeEnabled } = useSettingsStore();
+  const { colors } = useTheme();
 
   const getLessonStatus = (lessonId: string, lessonOrder: number, unitLessons: any[]) => {
     const isCompleted = completedLessons.includes(lessonId);
@@ -54,6 +56,120 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 
     return !allPreviousLessonsCompleted;
   };
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    header: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      padding: 20,
+      paddingTop: 60,
+      backgroundColor: colors.surface,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    headerTitle: {
+      fontSize: 24,
+      fontWeight: '700',
+      color: colors.primary,
+    },
+    headerSubtitle: {
+      fontSize: 14,
+      color: colors.textSecondary,
+      marginTop: 2,
+    },
+    xpCard: {
+      paddingHorizontal: 16,
+      paddingVertical: 8,
+    },
+    xpContent: {
+      alignItems: 'center',
+    },
+    xpLabel: {
+      fontSize: 12,
+      color: colors.textSecondary,
+      fontWeight: '600',
+    },
+    xpValue: {
+      fontSize: 18,
+      fontWeight: '700',
+      color: colors.primary,
+    },
+    streakBanner: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: '#FFD700',
+      paddingVertical: 12,
+    },
+    streakEmoji: {
+      fontSize: 20,
+      marginRight: 8,
+    },
+    streakText: {
+      fontSize: 16,
+      fontWeight: '700',
+      color: '#3C3C3C',
+    },
+    quickActions: {
+      flexDirection: 'row',
+      paddingHorizontal: 20,
+      paddingVertical: 16,
+      gap: 12,
+      backgroundColor: colors.surface,
+    },
+    actionButton: {
+      flex: 1,
+      backgroundColor: colors.surfaceSecondary,
+      paddingVertical: 16,
+      paddingHorizontal: 12,
+      borderRadius: 12,
+      alignItems: 'center',
+      borderWidth: 2,
+      borderColor: colors.border,
+    },
+    actionIcon: {
+      fontSize: 24,
+      marginBottom: 4,
+    },
+    actionLabel: {
+      fontSize: 14,
+      fontWeight: '600',
+      color: colors.textPrimary,
+    },
+    scrollView: {
+      flex: 1,
+    },
+    scrollContent: {
+      padding: 20,
+    },
+    unitContainer: {
+      marginBottom: 32,
+    },
+    unitHeader: {
+      marginBottom: 16,
+    },
+    unitTitle: {
+      fontSize: 20,
+      fontWeight: '700',
+      color: colors.textPrimary,
+      marginBottom: 4,
+    },
+    unitDescription: {
+      fontSize: 14,
+      color: colors.textSecondary,
+    },
+    lessonsContainer: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: 16,
+      justifyContent: 'space-evenly',
+    },
+  });
 
   return (
     <View style={styles.container}>
@@ -136,119 +252,3 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F7F7F7',
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 20,
-    paddingTop: 60,
-    backgroundColor: '#FFFFFF',
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E5E5',
-  },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: '#58CC02',
-  },
-  headerSubtitle: {
-    fontSize: 14,
-    color: '#777777',
-    marginTop: 2,
-  },
-  xpCard: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-  },
-  xpContent: {
-    alignItems: 'center',
-  },
-  xpLabel: {
-    fontSize: 12,
-    color: '#777777',
-    fontWeight: '600',
-  },
-  xpValue: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#58CC02',
-  },
-  streakBanner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#FFD700',
-    paddingVertical: 12,
-  },
-  streakEmoji: {
-    fontSize: 20,
-    marginRight: 8,
-  },
-  streakText: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#3C3C3C',
-  },
-  quickActions: {
-    flexDirection: 'row',
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    gap: 12,
-    backgroundColor: '#FFFFFF',
-  },
-  actionButton: {
-    flex: 1,
-    backgroundColor: '#f3f4f6',
-    paddingVertical: 16,
-    paddingHorizontal: 12,
-    borderRadius: 12,
-    alignItems: 'center',
-    borderWidth: 2,
-    borderColor: '#e5e7eb',
-  },
-  actionIcon: {
-    fontSize: 24,
-    marginBottom: 4,
-  },
-  actionLabel: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#1f2937',
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    padding: 20,
-  },
-  unitContainer: {
-    marginBottom: 32,
-  },
-  unitHeader: {
-    marginBottom: 16,
-  },
-  unitTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#3C3C3C',
-    marginBottom: 4,
-  },
-  unitDescription: {
-    fontSize: 14,
-    color: '#777777',
-  },
-  lessonsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-around',
-  },
-  bottomPadding: {
-    height: 40,
-  },
-});

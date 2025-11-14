@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import { Button, Card } from '../components';
+import { useTheme } from '../theme/ThemeContext';
 
 const { width } = Dimensions.get('window');
 
@@ -82,6 +83,127 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
 
   const step = onboardingSteps[currentStep];
   const isLastStep = currentStep === onboardingSteps.length - 1;
+  const { colors } = useTheme();
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    skipButton: {
+      position: 'absolute',
+      top: 60,
+      right: 20,
+      zIndex: 1,
+      padding: 12,
+    },
+    skipText: {
+      fontSize: 16,
+      color: colors.primary,
+      fontWeight: '600',
+    },
+    content: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: 24,
+    },
+    iconContainer: {
+      width: 120,
+      height: 120,
+      borderRadius: 60,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginBottom: 32,
+    },
+    icon: {
+      fontSize: 60,
+    },
+    title: {
+      fontSize: 28,
+      fontWeight: '700',
+      color: colors.textPrimary,
+      textAlign: 'center',
+      marginBottom: 16,
+    },
+    description: {
+      fontSize: 16,
+      color: colors.textSecondary,
+      textAlign: 'center',
+      lineHeight: 24,
+      marginBottom: 32,
+      paddingHorizontal: 20,
+    },
+    dotsContainer: {
+      flexDirection: 'row',
+      justifyContent: 'center',
+      marginBottom: 32,
+      gap: 8,
+    },
+    dot: {
+      width: 8,
+      height: 8,
+      borderRadius: 4,
+      backgroundColor: colors.border,
+    },
+    dotActive: {
+      width: 24,
+    },
+    cardsContainer: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      justifyContent: 'center',
+      gap: 12,
+      marginTop: 20,
+    },
+    featureCard: {
+      width: 100,
+      padding: 16,
+      alignItems: 'center',
+    },
+    featureIcon: {
+      fontSize: 32,
+      marginBottom: 8,
+    },
+    featureText: {
+      fontSize: 12,
+      color: colors.textPrimary,
+      textAlign: 'center',
+      fontWeight: '600',
+    },
+    statsPreview: {
+      flexDirection: 'row',
+      justifyContent: 'space-around',
+      width: '100%',
+      marginTop: 20,
+    },
+    statItem: {
+      alignItems: 'center',
+    },
+    statValue: {
+      fontSize: 32,
+      fontWeight: '700',
+      color: colors.primary,
+      marginBottom: 4,
+    },
+    statLabel: {
+      fontSize: 14,
+      color: colors.textSecondary,
+      fontWeight: '600',
+    },
+    navigation: {
+      flexDirection: 'row',
+      paddingHorizontal: 24,
+      paddingBottom: 40,
+      gap: 12,
+    },
+    navButton: {
+      flex: 1,
+    },
+    navButtonFull: {
+      flex: 1,
+    },
+  });
 
   return (
     <View style={styles.container}>
@@ -180,124 +302,3 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    paddingTop: 60,
-  },
-  skipButton: {
-    position: 'absolute',
-    top: 60,
-    right: 20,
-    padding: 12,
-    zIndex: 10,
-  },
-  skipText: {
-    fontSize: 16,
-    color: '#6b7280',
-    fontWeight: '600',
-  },
-  content: {
-    flex: 1,
-    paddingHorizontal: 32,
-    paddingTop: 40,
-    alignItems: 'center',
-  },
-  iconContainer: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 32,
-  },
-  icon: {
-    fontSize: 64,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#1f2937',
-    textAlign: 'center',
-    marginBottom: 16,
-  },
-  description: {
-    fontSize: 16,
-    color: '#6b7280',
-    textAlign: 'center',
-    lineHeight: 24,
-    marginBottom: 32,
-  },
-  dotsContainer: {
-    flexDirection: 'row',
-    gap: 8,
-    marginBottom: 32,
-  },
-  dot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#d1d5db',
-  },
-  dotActive: {
-    width: 24,
-  },
-  cardsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 12,
-    justifyContent: 'center',
-    marginTop: 8,
-  },
-  featureCard: {
-    width: (width - 96) / 2,
-    padding: 16,
-    alignItems: 'center',
-  },
-  featureIcon: {
-    fontSize: 32,
-    marginBottom: 8,
-  },
-  featureText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#4b5563',
-    textAlign: 'center',
-  },
-  statsPreview: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    width: '100%',
-    paddingVertical: 24,
-    paddingHorizontal: 16,
-    backgroundColor: '#f9fafb',
-    borderRadius: 16,
-    marginTop: 8,
-  },
-  statItem: {
-    alignItems: 'center',
-  },
-  statValue: {
-    fontSize: 32,
-    fontWeight: '700',
-    color: '#58CC02',
-    marginBottom: 4,
-  },
-  statLabel: {
-    fontSize: 14,
-    color: '#6b7280',
-  },
-  navigation: {
-    flexDirection: 'row',
-    gap: 12,
-    paddingHorizontal: 32,
-    paddingBottom: 40,
-  },
-  navButton: {
-    flex: 1,
-  },
-  navButtonFull: {
-    flex: 1,
-  },
-});

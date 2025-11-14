@@ -5,6 +5,7 @@ import { useReviewStore } from '../store/reviewStore';
 import { useProgressStore } from '../store/progressStore';
 import { copticUnits } from '../data/lessons';
 import { Exercise } from '../types';
+import { useTheme } from '../theme/ThemeContext';
 
 interface ReviewScreenProps {
   onStartReview: (exercises: Exercise[]) => void;
@@ -14,6 +15,7 @@ interface ReviewScreenProps {
 export const ReviewScreen: React.FC<ReviewScreenProps> = ({ onStartReview, onBack }) => {
   const { getDueReviews } = useReviewStore();
   const { completedLessons } = useProgressStore();
+  const { colors } = useTheme();
   const [dueReviews, setDueReviews] = useState(getDueReviews());
 
   useEffect(() => {
@@ -47,6 +49,171 @@ export const ReviewScreen: React.FC<ReviewScreenProps> = ({ onStartReview, onBac
 
   const completedLessonsCount = completedLessons.length;
   const hasCompletedLessons = completedLessonsCount > 0;
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    header: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingHorizontal: 20,
+      paddingTop: 60,
+      paddingBottom: 20,
+      backgroundColor: colors.surface,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    backButton: {
+      width: 40,
+      height: 40,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    backIcon: {
+      fontSize: 24,
+      color: colors.textPrimary,
+    },
+    headerTitle: {
+      fontSize: 20,
+      fontWeight: '700',
+      color: colors.textPrimary,
+    },
+    placeholder: {
+      width: 40,
+    },
+    content: {
+      flex: 1,
+    },
+    scrollContent: {
+      padding: 20,
+    },
+    statsCard: {
+      padding: 20,
+      marginBottom: 20,
+    },
+    statRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-around',
+      alignItems: 'center',
+    },
+    statItem: {
+      alignItems: 'center',
+      flex: 1,
+    },
+    statValue: {
+      fontSize: 32,
+      fontWeight: '700',
+      color: colors.primary,
+      marginBottom: 4,
+    },
+    statLabel: {
+      fontSize: 14,
+      color: colors.textSecondary,
+      textAlign: 'center',
+    },
+    statDivider: {
+      width: 1,
+      height: 40,
+      backgroundColor: colors.border,
+      marginHorizontal: 20,
+    },
+    practiceCard: {
+      padding: 24,
+      marginBottom: 20,
+    },
+    practiceHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 16,
+    },
+    practiceIcon: {
+      fontSize: 32,
+      marginRight: 12,
+    },
+    practiceInfo: {
+      flex: 1,
+    },
+    practiceTitle: {
+      fontSize: 20,
+      fontWeight: '700',
+      color: colors.textPrimary,
+      marginBottom: 4,
+    },
+    practiceDescription: {
+      fontSize: 14,
+      color: colors.textSecondary,
+      lineHeight: 20,
+    },
+    dueInfo: {
+      backgroundColor: colors.infoLight,
+      padding: 12,
+      borderRadius: 8,
+      marginBottom: 16,
+      borderWidth: 1,
+      borderColor: colors.info,
+    },
+    dueText: {
+      fontSize: 14,
+      color: colors.textPrimary,
+      fontWeight: '600',
+      textAlign: 'center',
+    },
+    emptyState: {
+      alignItems: 'center',
+      paddingVertical: 24,
+    },
+    emptyIcon: {
+      fontSize: 48,
+      marginBottom: 12,
+    },
+    emptyText: {
+      fontSize: 14,
+      color: colors.textSecondary,
+      textAlign: 'center',
+      lineHeight: 20,
+    },
+    categoryCard: {
+      padding: 24,
+      marginBottom: 20,
+    },
+    sectionTitle: {
+      fontSize: 20,
+      fontWeight: '700',
+      color: colors.textPrimary,
+      marginBottom: 16,
+    },
+    categoryGrid: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: 12,
+    },
+    categoryButton: {
+      flex: 1,
+      minWidth: '45%',
+      backgroundColor: colors.surfaceSecondary,
+      padding: 20,
+      borderRadius: 12,
+      alignItems: 'center',
+      borderWidth: 2,
+      borderColor: colors.border,
+    },
+    categoryDisabled: {
+      opacity: 0.5,
+    },
+    categoryIcon: {
+      fontSize: 32,
+      marginBottom: 8,
+    },
+    categoryText: {
+      fontSize: 14,
+      color: colors.textPrimary,
+      fontWeight: '600',
+      textAlign: 'center',
+    },
+  });
 
   return (
     <View style={styles.container}>
@@ -195,169 +362,3 @@ export const ReviewScreen: React.FC<ReviewScreenProps> = ({ onStartReview, onBac
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f9fafb',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingTop: 60,
-    paddingBottom: 20,
-    backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
-  },
-  backButton: {
-    width: 40,
-    height: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  backIcon: {
-    fontSize: 24,
-    color: '#1f2937',
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#1f2937',
-  },
-  placeholder: {
-    width: 40,
-  },
-  content: {
-    flex: 1,
-  },
-  scrollContent: {
-    padding: 20,
-  },
-  statsCard: {
-    padding: 20,
-    marginBottom: 16,
-  },
-  statRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-  },
-  statItem: {
-    alignItems: 'center',
-    flex: 1,
-  },
-  statValue: {
-    fontSize: 32,
-    fontWeight: '700',
-    color: '#58CC02',
-    marginBottom: 4,
-  },
-  statLabel: {
-    fontSize: 14,
-    color: '#6b7280',
-    textAlign: 'center',
-  },
-  statDivider: {
-    width: 1,
-    backgroundColor: '#e5e7eb',
-    marginHorizontal: 16,
-  },
-  practiceCard: {
-    padding: 20,
-    marginBottom: 16,
-  },
-  practiceHeader: {
-    flexDirection: 'row',
-    marginBottom: 20,
-  },
-  practiceIcon: {
-    fontSize: 40,
-    marginRight: 16,
-  },
-  practiceInfo: {
-    flex: 1,
-  },
-  practiceTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#1f2937',
-    marginBottom: 4,
-  },
-  practiceDescription: {
-    fontSize: 14,
-    color: '#6b7280',
-    lineHeight: 20,
-  },
-  dueInfo: {
-    backgroundColor: '#fef3c7',
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: '#fbbf24',
-  },
-  dueText: {
-    fontSize: 14,
-    color: '#92400e',
-    fontWeight: '600',
-    textAlign: 'center',
-  },
-  emptyState: {
-    alignItems: 'center',
-    paddingVertical: 20,
-  },
-  emptyIcon: {
-    fontSize: 48,
-    marginBottom: 12,
-  },
-  emptyText: {
-    fontSize: 14,
-    color: '#6b7280',
-    textAlign: 'center',
-    lineHeight: 20,
-  },
-  categoryCard: {
-    padding: 20,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#1f2937',
-    marginBottom: 16,
-  },
-  categoryGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 12,
-    marginBottom: 12,
-  },
-  categoryButton: {
-    flex: 1,
-    minWidth: '45%',
-    backgroundColor: '#f3f4f6',
-    padding: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-    borderWidth: 2,
-    borderColor: '#e5e7eb',
-  },
-  categoryDisabled: {
-    opacity: 0.5,
-  },
-  categoryIcon: {
-    fontSize: 32,
-    marginBottom: 8,
-  },
-  categoryText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#1f2937',
-  },
-  categoryNote: {
-    fontSize: 12,
-    color: '#9ca3af',
-    textAlign: 'center',
-    fontStyle: 'italic',
-  },
-});

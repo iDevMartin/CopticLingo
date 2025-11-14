@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-nati
 import { Card } from '../components';
 import { useProgressStore } from '../store/progressStore';
 import { useAchievementStore } from '../store/achievementStore';
+import { useTheme } from '../theme/ThemeContext';
 
 interface ProfileScreenProps {
   onBack: () => void;
@@ -19,9 +20,166 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ onBack, onSettings
     vocabularyLearned,
   } = useProgressStore();
   const { achievements } = useAchievementStore();
+  const { colors } = useTheme();
 
   const unlockedAchievements = achievements.filter(a => a.unlocked);
   const xpToNextLevel = (level * 100) - (totalXP % 100);
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    header: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      padding: 20,
+      paddingTop: 60,
+      backgroundColor: colors.surface,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    backButton: {
+      padding: 8,
+    },
+    backText: {
+      fontSize: 16,
+      color: colors.primary,
+      fontWeight: '600',
+    },
+    headerTitle: {
+      fontSize: 20,
+      fontWeight: '700',
+      color: colors.textPrimary,
+    },
+    settingsButton: {
+      padding: 8,
+    },
+    settingsIcon: {
+      fontSize: 24,
+    },
+    scrollView: {
+      flex: 1,
+    },
+    scrollContent: {
+      padding: 20,
+    },
+    levelCard: {
+      marginBottom: 20,
+      padding: 24,
+    },
+    levelContent: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    levelEmoji: {
+      fontSize: 60,
+      marginRight: 20,
+    },
+    levelInfo: {
+      flex: 1,
+    },
+    levelTitle: {
+      fontSize: 32,
+      fontWeight: '700',
+      color: colors.textPrimary,
+      marginBottom: 4,
+    },
+    levelSubtitle: {
+      fontSize: 16,
+      color: colors.primary,
+      fontWeight: '600',
+      marginBottom: 4,
+    },
+    levelProgress: {
+      fontSize: 14,
+      color: colors.textSecondary,
+    },
+    statsGrid: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: 12,
+      marginBottom: 32,
+    },
+    statCard: {
+      flex: 1,
+      minWidth: '45%',
+      alignItems: 'center',
+      padding: 20,
+    },
+    statEmoji: {
+      fontSize: 36,
+      marginBottom: 8,
+    },
+    statValue: {
+      fontSize: 28,
+      fontWeight: '700',
+      color: colors.textPrimary,
+      marginBottom: 4,
+    },
+    statLabel: {
+      fontSize: 14,
+      color: colors.textSecondary,
+      fontWeight: '600',
+    },
+    section: {
+      marginBottom: 32,
+    },
+    sectionTitle: {
+      fontSize: 20,
+      fontWeight: '700',
+      color: colors.textPrimary,
+      marginBottom: 16,
+    },
+    achievementsGrid: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: 12,
+    },
+    achievementCard: {
+      flex: 1,
+      minWidth: '45%',
+      padding: 16,
+      alignItems: 'center',
+      position: 'relative',
+    },
+    lockedAchievement: {
+      opacity: 0.5,
+    },
+    achievementIcon: {
+      fontSize: 40,
+      marginBottom: 8,
+    },
+    achievementTitle: {
+      fontSize: 14,
+      fontWeight: '700',
+      color: colors.textPrimary,
+      textAlign: 'center',
+      marginBottom: 4,
+    },
+    achievementDescription: {
+      fontSize: 12,
+      color: colors.textSecondary,
+      textAlign: 'center',
+    },
+    unlockedBadge: {
+      position: 'absolute',
+      top: 8,
+      right: 8,
+      backgroundColor: colors.success,
+      borderRadius: 12,
+      width: 24,
+      height: 24,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    unlockedText: {
+      color: '#FFFFFF',
+      fontSize: 14,
+      fontWeight: '700',
+    },
+  });
 
   return (
     <View style={styles.container}>
@@ -108,150 +266,3 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ onBack, onSettings
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F7F7F7',
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 20,
-    paddingTop: 60,
-    backgroundColor: '#FFFFFF',
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E5E5',
-  },
-  backButton: {
-    padding: 8,
-  },
-  backText: {
-    fontSize: 16,
-    color: '#58CC02',
-    fontWeight: '600',
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#3C3C3C',
-  },
-  settingsButton: {
-    padding: 8,
-  },
-  settingsIcon: {
-    fontSize: 24,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    padding: 20,
-  },
-  levelCard: {
-    marginBottom: 20,
-  },
-  levelContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  levelEmoji: {
-    fontSize: 48,
-    marginRight: 16,
-  },
-  levelInfo: {
-    flex: 1,
-  },
-  levelTitle: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: '#3C3C3C',
-  },
-  levelSubtitle: {
-    fontSize: 16,
-    color: '#58CC02',
-    fontWeight: '600',
-    marginTop: 4,
-  },
-  levelProgress: {
-    fontSize: 14,
-    color: '#777777',
-    marginTop: 4,
-  },
-  statsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 12,
-    marginBottom: 20,
-  },
-  statCard: {
-    flex: 1,
-    minWidth: '45%',
-    alignItems: 'center',
-    padding: 20,
-  },
-  statEmoji: {
-    fontSize: 32,
-    marginBottom: 8,
-  },
-  statValue: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#3C3C3C',
-    marginBottom: 4,
-  },
-  statLabel: {
-    fontSize: 14,
-    color: '#777777',
-    fontWeight: '600',
-  },
-  section: {
-    marginBottom: 20,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#3C3C3C',
-    marginBottom: 16,
-  },
-  achievementsGrid: {
-    gap: 12,
-  },
-  achievementCard: {
-    position: 'relative',
-    padding: 20,
-  },
-  lockedAchievement: {
-    opacity: 0.5,
-  },
-  achievementIcon: {
-    fontSize: 32,
-    marginBottom: 8,
-  },
-  achievementTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#3C3C3C',
-    marginBottom: 4,
-  },
-  achievementDescription: {
-    fontSize: 14,
-    color: '#777777',
-  },
-  unlockedBadge: {
-    position: 'absolute',
-    top: 12,
-    right: 12,
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: '#58CC02',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  unlockedText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '700',
-  },
-});

@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { Exercise } from '../../types';
+import { useTheme } from '../../theme/ThemeContext';
 
 interface MultipleChoiceProps {
   exercise: Exercise;
@@ -15,20 +16,137 @@ export const MultipleChoice: React.FC<MultipleChoiceProps> = ({
   onAnswerSelect,
   showResult,
 }) => {
+  const { colors } = useTheme();
+
+  const styles = StyleSheet.create({
+    container: {
+      gap: 16,
+    },
+    question: {
+      fontSize: 20,
+      fontWeight: '600',
+      color: colors.textPrimary,
+      marginBottom: 8,
+      textAlign: 'center',
+    },
+    questionCoptic: {
+      fontSize: 32,
+      fontWeight: '700',
+      color: colors.primary,
+      marginBottom: 24,
+      textAlign: 'center',
+    },
+    optionsContainer: {
+      gap: 12,
+    },
+    option: {
+      padding: 16,
+      borderRadius: 12,
+      borderWidth: 2,
+      borderColor: colors.border,
+      backgroundColor: colors.surfaceSecondary,
+      minHeight: 56,
+      justifyContent: 'center',
+    },
+    selectedOption: {
+      borderColor: colors.primary,
+      backgroundColor: '#E8F5E9',
+      borderWidth: 3,
+    },
+    correctOption: {
+      borderColor: colors.primary,
+      backgroundColor: '#E8F5E9',
+      borderWidth: 3,
+    },
+    incorrectOption: {
+      borderColor: colors.error,
+      backgroundColor: colors.errorLight,
+      borderWidth: 3,
+    },
+    optionText: {
+      fontSize: 16,
+      color: colors.textPrimary,
+      textAlign: 'center',
+      fontWeight: '600',
+    },
+    selectedOptionText: {
+      color: colors.primary,
+      fontWeight: '700',
+    },
+    correctOptionText: {
+      color: colors.primary,
+      fontWeight: '700',
+    },
+    incorrectOptionText: {
+      color: colors.error,
+      fontWeight: '700',
+    },
+    checkmark: {
+      fontSize: 20,
+      color: colors.primary,
+      fontWeight: '700',
+      position: 'absolute',
+      right: 16,
+    },
+    crossmark: {
+      fontSize: 20,
+      color: colors.error,
+      fontWeight: '700',
+      position: 'absolute',
+      right: 16,
+    },
+    explanationBox: {
+      marginTop: 16,
+      padding: 16,
+      backgroundColor: colors.warningLight,
+      borderRadius: 12,
+      borderWidth: 1,
+      borderColor: colors.warning,
+    },
+    explanationTitle: {
+      fontSize: 16,
+      fontWeight: '700',
+      color: colors.textPrimary,
+      marginBottom: 8,
+    },
+    explanationText: {
+      fontSize: 14,
+      color: colors.textPrimary,
+      lineHeight: 20,
+    },
+  });
+
   const getOptionStyle = (option: string) => {
     if (!showResult) {
-      return option === selectedAnswer ? styles.selectedOption : styles.option;
+      return option === selectedAnswer ? [styles.option, styles.selectedOption] : styles.option;
     }
 
     if (option === exercise.correctAnswer) {
-      return styles.correctOption;
+      return [styles.option, styles.correctOption];
     }
 
     if (option === selectedAnswer && option !== exercise.correctAnswer) {
-      return styles.incorrectOption;
+      return [styles.option, styles.incorrectOption];
     }
 
     return styles.option;
+  };
+
+  const getOptionTextStyle = (option: string) => {
+    if (!showResult && option === selectedAnswer) {
+      return [styles.optionText, styles.selectedOptionText];
+    }
+
+    if (showResult) {
+      if (option === exercise.correctAnswer) {
+        return [styles.optionText, styles.correctOptionText];
+      }
+      if (option === selectedAnswer && option !== exercise.correctAnswer) {
+        return [styles.optionText, styles.incorrectOptionText];
+      }
+    }
+
+    return styles.optionText;
   };
 
   return (
@@ -40,21 +158,20 @@ export const MultipleChoice: React.FC<MultipleChoiceProps> = ({
 
       <View style={styles.optionsContainer}>
         {exercise.options?.map((option, index) => (
-          <TouchableOpacity
+          <Pressable
             key={index}
             style={getOptionStyle(option)}
             onPress={() => !showResult && onAnswerSelect(option)}
             disabled={showResult}
-            activeOpacity={0.7}
           >
-            <Text style={styles.optionText}>{option}</Text>
+            <Text style={getOptionTextStyle(option)}>{option}</Text>
             {showResult && option === exercise.correctAnswer && (
               <Text style={styles.checkmark}>✓</Text>
             )}
             {showResult && option === selectedAnswer && option !== exercise.correctAnswer && (
               <Text style={styles.crossmark}>✗</Text>
             )}
-          </TouchableOpacity>
+          </Pressable>
         ))}
       </View>
 
@@ -68,98 +185,3 @@ export const MultipleChoice: React.FC<MultipleChoiceProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  question: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: '#3C3C3C',
-    marginBottom: 12,
-    textAlign: 'center',
-  },
-  questionCoptic: {
-    fontSize: 36,
-    fontWeight: '700',
-    color: '#58CC02',
-    marginBottom: 32,
-    textAlign: 'center',
-  },
-  optionsContainer: {
-    gap: 12,
-  },
-  option: {
-    backgroundColor: '#FFFFFF',
-    borderWidth: 2,
-    borderColor: '#E5E5E5',
-    borderRadius: 12,
-    padding: 18,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  selectedOption: {
-    backgroundColor: '#E3F2FD',
-    borderWidth: 2,
-    borderColor: '#2196F3',
-    borderRadius: 12,
-    padding: 18,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  correctOption: {
-    backgroundColor: '#E8F5E9',
-    borderWidth: 2,
-    borderColor: '#58CC02',
-    borderRadius: 12,
-    padding: 18,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  incorrectOption: {
-    backgroundColor: '#FFEBEE',
-    borderWidth: 2,
-    borderColor: '#FF4B4B',
-    borderRadius: 12,
-    padding: 18,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  optionText: {
-    fontSize: 16,
-    color: '#3C3C3C',
-    fontWeight: '600',
-    flex: 1,
-  },
-  checkmark: {
-    fontSize: 24,
-    color: '#58CC02',
-  },
-  crossmark: {
-    fontSize: 24,
-    color: '#FF4B4B',
-  },
-  explanationBox: {
-    marginTop: 24,
-    backgroundColor: '#FFF9C4',
-    borderRadius: 12,
-    padding: 16,
-    borderWidth: 2,
-    borderColor: '#FDD835',
-  },
-  explanationTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#3C3C3C',
-    marginBottom: 8,
-  },
-  explanationText: {
-    fontSize: 14,
-    color: '#3C3C3C',
-    lineHeight: 20,
-  },
-});
