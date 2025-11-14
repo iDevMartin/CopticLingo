@@ -9,6 +9,7 @@ import {
   ScrollView,
 } from 'react-native';
 import { Button } from '../components';
+import { useTheme } from '../theme/ThemeContext';
 
 interface WelcomeScreenProps {
   onComplete: () => void;
@@ -16,12 +17,83 @@ interface WelcomeScreenProps {
 
 export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onComplete }) => {
   const [name, setName] = useState('');
+  const { colors } = useTheme();
 
   const handleStart = () => {
     if (name.trim()) {
       onComplete();
     }
   };
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    scrollContent: {
+      flexGrow: 1,
+      justifyContent: 'center',
+      padding: 24,
+    },
+    content: {
+      alignItems: 'center',
+    },
+    title: {
+      fontSize: 32,
+      fontWeight: '700',
+      color: colors.textPrimary,
+      textAlign: 'center',
+      marginBottom: 8,
+    },
+    copticTitle: {
+      fontSize: 28,
+      fontWeight: '700',
+      color: colors.primary,
+      textAlign: 'center',
+      marginBottom: 48,
+    },
+    infoBox: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      width: '100%',
+      backgroundColor: colors.surface,
+      padding: 20,
+      borderRadius: 16,
+      marginBottom: 16,
+      borderWidth: 2,
+      borderColor: colors.border,
+    },
+    emoji: {
+      fontSize: 32,
+      marginRight: 16,
+    },
+    infoText: {
+      flex: 1,
+      fontSize: 16,
+      color: colors.textPrimary,
+      lineHeight: 22,
+    },
+    inputContainer: {
+      width: '100%',
+      marginTop: 32,
+      marginBottom: 24,
+    },
+    label: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: colors.textPrimary,
+      marginBottom: 12,
+    },
+    input: {
+      backgroundColor: colors.surface,
+      borderWidth: 2,
+      borderColor: colors.border,
+      borderRadius: 12,
+      padding: 16,
+      fontSize: 16,
+      color: colors.textPrimary,
+    },
+  });
 
   return (
     <KeyboardAvoidingView
@@ -78,63 +150,3 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onComplete }) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-  },
-  scrollContent: {
-    flexGrow: 1,
-    justifyContent: 'center',
-  },
-  content: {
-    padding: 24,
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: '700',
-    color: '#3C3C3C',
-    textAlign: 'center',
-    marginBottom: 8,
-  },
-  copticTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: '#58CC02',
-    textAlign: 'center',
-    marginBottom: 40,
-  },
-  infoBox: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 20,
-    paddingHorizontal: 16,
-  },
-  emoji: {
-    fontSize: 32,
-    marginRight: 16,
-  },
-  infoText: {
-    flex: 1,
-    fontSize: 16,
-    color: '#3C3C3C',
-    lineHeight: 22,
-  },
-  inputContainer: {
-    marginVertical: 32,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#3C3C3C',
-    marginBottom: 8,
-  },
-  input: {
-    borderWidth: 2,
-    borderColor: '#E5E5E5',
-    borderRadius: 12,
-    padding: 16,
-    fontSize: 16,
-    backgroundColor: '#FFFFFF',
-  },
-});

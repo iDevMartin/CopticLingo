@@ -6,8 +6,8 @@ import { Unit } from '../../types';
 
 const unit1: Unit = {
   id: 'unit-1',
-  title: 'Coptic Alphabet - Greek Letters (Part 1)',
-  description: 'Learn the first half of the Coptic alphabet',
+  title: 'Coptic Alphabet',
+  description: 'Learn the Coptic alphabet',
   order: 1,
   color: '#58CC02',
   lessons: [

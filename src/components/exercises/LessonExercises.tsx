@@ -10,6 +10,7 @@ import { SentenceBuildingExercise } from './SentenceBuildingExercise';
 import { ListeningExercise } from './ListeningExercise';
 import { SpeakingExercise } from './SpeakingExercise';
 import { useSoundEffect } from '../../utils/useSoundEffect';
+import { useTheme } from '../../theme/ThemeContext';
 
 interface LessonProps {
   exercises: Exercise[];
@@ -25,6 +26,7 @@ export const LessonExercises: React.FC<LessonProps> = ({ exercises, onComplete, 
   const [hearts, setHearts] = useState(3);
   const [exerciseCompleted, setExerciseCompleted] = useState(false);
   const { playCorrectSound } = useSoundEffect();
+  const { colors } = useTheme();
 
   const currentExercise = exercises[currentIndex];
   const progress = (currentIndex + 1) / exercises.length;
@@ -87,6 +89,80 @@ export const LessonExercises: React.FC<LessonProps> = ({ exercises, onComplete, 
       onComplete(correctAnswers + (selectedAnswer === currentExercise.correctAnswer ? 0 : 0), exercises.length);
     }
   };
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.surface,
+    },
+    header: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingHorizontal: 20,
+      paddingTop: 60,
+      paddingBottom: 16,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    exitButton: {
+      width: 44,
+      height: 44,
+      padding: 0,
+      minHeight: 44,
+    },
+    progressContainer: {
+      flex: 1,
+      marginHorizontal: 16,
+    },
+    heartsContainer: {
+      flexDirection: 'row',
+      gap: 4,
+    },
+    heart: {
+      fontSize: 20,
+    },
+    content: {
+      flex: 1,
+    },
+    contentContainer: {
+      padding: 24,
+      paddingBottom: 40,
+    },
+    footer: {
+      padding: 20,
+      paddingBottom: 40,
+      borderTopWidth: 1,
+      borderTopColor: colors.border,
+      backgroundColor: colors.surface,
+    },
+    resultContainer: {
+      gap: 16,
+    },
+    resultBanner: {
+      padding: 16,
+      borderRadius: 12,
+      borderWidth: 2,
+    },
+    correctBanner: {
+      backgroundColor: '#E8F5E9',
+      borderColor: colors.primary,
+    },
+    incorrectBanner: {
+      backgroundColor: colors.errorLight,
+      borderColor: colors.error,
+    },
+    resultText: {
+      fontSize: 18,
+      fontWeight: '700',
+      textAlign: 'center',
+    },
+    correctText: {
+      color: colors.primary,
+    },
+    incorrectText: {
+      color: colors.error,
+    },
+  });
 
   const renderExercise = () => {
     switch (currentExercise.type) {
@@ -201,7 +277,15 @@ export const LessonExercises: React.FC<LessonProps> = ({ exercises, onComplete, 
                       : styles.incorrectBanner,
                   ]}
                 >
-                  <Text style={styles.resultText}>
+                  <Text
+                    style={[
+                      styles.resultText,
+                      selectedAnswer === currentExercise.correctAnswer ||
+                      currentExercise.type === 'matching'
+                        ? styles.correctText
+                        : styles.incorrectText,
+                    ]}
+                  >
                     {selectedAnswer === currentExercise.correctAnswer ||
                     (currentExercise.type === 'matching' && exerciseCompleted)
                       ? '✓ Correct!'
@@ -223,67 +307,3 @@ export const LessonExercises: React.FC<LessonProps> = ({ exercises, onComplete, 
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingTop: 60,
-    paddingBottom: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E5E5',
-  },
-  exitButton: {
-    width: 44,
-    height: 44,
-    padding: 0,
-    minHeight: 44,
-  },
-  progressContainer: {
-    flex: 1,
-    marginHorizontal: 16,
-  },
-  heartsContainer: {
-    flexDirection: 'row',
-    gap: 4,
-  },
-  heart: {
-    fontSize: 20,
-  },
-  content: {
-    flex: 1,
-  },
-  contentContainer: {
-    padding: 24,
-    paddingBottom: 40,
-  },
-  footer: {
-    padding: 20,
-    paddingBottom: 40,
-    borderTopWidth: 1,
-    borderTopColor: '#E5E5E5',
-  },
-  resultContainer: {
-    gap: 12,
-  },
-  resultBanner: {
-    padding: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-  },
-  correctBanner: {
-    backgroundColor: '#E8F5E9',
-  },
-  incorrectBanner: {
-    backgroundColor: '#FFEBEE',
-  },
-  resultText: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#3C3C3C',
-  },
-});

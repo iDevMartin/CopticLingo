@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, Modal, TouchableOpacity, Animated } from 'react-native';
 import { Achievement } from '../types';
+import { useTheme } from '../theme/ThemeContext';
 
 interface AchievementModalProps {
   achievement: Achievement | null;
@@ -13,6 +14,7 @@ export const AchievementModal: React.FC<AchievementModalProps> = ({
   visible,
   onClose,
 }) => {
+  const { colors } = useTheme();
   const scaleAnim = new Animated.Value(0);
   const fadeAnim = new Animated.Value(0);
 
@@ -38,6 +40,78 @@ export const AchievementModal: React.FC<AchievementModalProps> = ({
   }, [visible]);
 
   if (!achievement) return null;
+
+  const styles = StyleSheet.create({
+    overlay: {
+      flex: 1,
+      backgroundColor: colors.overlay,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    container: {
+      width: '85%',
+      maxWidth: 400,
+    },
+    card: {
+      backgroundColor: colors.surface,
+      borderRadius: 24,
+      overflow: 'hidden',
+      boxShadow: `0px 8px 16px ${colors.shadowColor}`,
+      elevation: 10,
+    },
+    banner: {
+      backgroundColor: colors.primary,
+      paddingVertical: 16,
+      paddingHorizontal: 20,
+    },
+    bannerText: {
+      fontSize: 16,
+      fontWeight: '700',
+      color: '#fff',
+      textAlign: 'center',
+    },
+    iconContainer: {
+      alignItems: 'center',
+      paddingTop: 32,
+      paddingBottom: 16,
+    },
+    icon: {
+      fontSize: 80,
+    },
+    content: {
+      paddingHorizontal: 24,
+      paddingBottom: 24,
+      alignItems: 'center',
+    },
+    title: {
+      fontSize: 24,
+      fontWeight: '700',
+      color: colors.textPrimary,
+      marginBottom: 8,
+      textAlign: 'center',
+    },
+    description: {
+      fontSize: 16,
+      color: colors.textSecondary,
+      textAlign: 'center',
+      lineHeight: 22,
+    },
+    button: {
+      backgroundColor: colors.primary,
+      paddingVertical: 16,
+      marginHorizontal: 24,
+      marginBottom: 24,
+      borderRadius: 12,
+      boxShadow: `0px 4px 8px ${colors.primaryDark}`,
+      elevation: 4,
+    },
+    buttonText: {
+      fontSize: 18,
+      fontWeight: '700',
+      color: '#fff',
+      textAlign: 'center',
+    },
+  });
 
   return (
     <Modal
@@ -90,74 +164,3 @@ export const AchievementModal: React.FC<AchievementModalProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  container: {
-    width: '85%',
-    maxWidth: 400,
-  },
-  card: {
-    backgroundColor: '#fff',
-    borderRadius: 24,
-    overflow: 'hidden',
-    boxShadow: '0px 8px 16px rgba(0, 0, 0, 0.3)',
-    elevation: 10,
-  },
-  banner: {
-    backgroundColor: '#58CC02',
-    paddingVertical: 16,
-    paddingHorizontal: 20,
-  },
-  bannerText: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#fff',
-    textAlign: 'center',
-  },
-  iconContainer: {
-    alignItems: 'center',
-    paddingTop: 32,
-    paddingBottom: 16,
-  },
-  icon: {
-    fontSize: 80,
-  },
-  content: {
-    paddingHorizontal: 24,
-    paddingBottom: 24,
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: '#1f2937',
-    marginBottom: 8,
-    textAlign: 'center',
-  },
-  description: {
-    fontSize: 16,
-    color: '#6b7280',
-    textAlign: 'center',
-    lineHeight: 22,
-  },
-  button: {
-    backgroundColor: '#58CC02',
-    paddingVertical: 16,
-    marginHorizontal: 24,
-    marginBottom: 24,
-    borderRadius: 12,
-    boxShadow: '0px 4px 8px rgba(88, 204, 2, 0.3)',
-    elevation: 4,
-  },
-  buttonText: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#fff',
-    textAlign: 'center',
-  },
-});

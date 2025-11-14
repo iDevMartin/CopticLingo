@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ViewStyle } from 'react-native';
+import { useTheme } from '../theme/ThemeContext';
 
 interface CardProps {
   title?: string;
@@ -16,6 +17,28 @@ export const Card: React.FC<CardProps> = ({
   style,
   elevated = true,
 }) => {
+  const { colors } = useTheme();
+
+  const styles = StyleSheet.create({
+    card: {
+      backgroundColor: colors.surface,
+      borderRadius: 16,
+      padding: 16,
+      borderWidth: 2,
+      borderColor: colors.border,
+    },
+    elevated: {
+      boxShadow: `0px 2px 4px ${colors.shadowColor}`,
+      elevation: 3,
+    },
+    title: {
+      fontSize: 18,
+      fontWeight: '700',
+      color: colors.textPrimary,
+      marginBottom: 12,
+    },
+  });
+
   const content = (
     <View style={[styles.card, elevated && styles.elevated, style]}>
       {title && <Text style={styles.title}>{title}</Text>}
@@ -33,23 +56,3 @@ export const Card: React.FC<CardProps> = ({
 
   return content;
 };
-
-const styles = StyleSheet.create({
-  card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 16,
-    borderWidth: 2,
-    borderColor: '#E5E5E5',
-  },
-  elevated: {
-    boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
-    elevation: 3,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#3C3C3C',
-    marginBottom: 12,
-  },
-});
