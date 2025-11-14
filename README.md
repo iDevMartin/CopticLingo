@@ -12,7 +12,9 @@ Bohairic Coptic is the dialect currently used in the Coptic Orthodox Church for 
 
 ### 📚 Learning System
 
-- **22 Learning Units** organized by difficulty and topic
+- **45 Learning Units** organized by difficulty and topic
+- **209 Lessons** with comprehensive coverage
+- **1,670+ Exercises** across all lesson types
 - **Progressive Skill Tree** - Visual learning path with locked/unlocked lessons
 - **7 Exercise Types**:
   - **Translation** - Translate between Coptic and English
@@ -100,7 +102,8 @@ copticlingo/
 │   │   ├── ProgressBar.tsx
 │   │   └── index.ts
 │   ├── data/
-│   │   └── lessons.ts           # 22 units with 95+ lessons
+│   │   ├── lessons.ts           # Main lesson index
+│   │   └── unit-XX-*.ts         # 45 modular unit files with 209 lessons, 1,670+ exercises
 │   ├── screens/
 │   │   ├── WelcomeScreen.tsx
 │   │   ├── OnboardingScreen.tsx
@@ -187,39 +190,48 @@ All stores use AsyncStorage for automatic persistence.
 
 ## Curriculum Overview
 
-### Units 1-2: Alphabet (18 lessons)
-- Coptic alphabet basics (Ⲁ-Ⲱ)
-- Letter pronunciation
-- Basic letter combinations
-- Vowels and consonants
+### Units 1-3: Foundations (12 lessons)
+- Unit 1: Coptic Alphabet (Ⲁ-Ⲱ)
+- Unit 2: Pronunciation Rules
+- Unit 3: First Words & Basic Vocabulary
 
-### Units 3-15: Grammar (55 lessons)
-- Articles and demonstratives (ⲡ, ⲧ, ⲛⲓ)
-- Personal pronouns (ⲁⲛⲟⲕ, ⲛⲧⲟⲕ, etc.)
-- Possessive pronouns
-- Basic verb conjugation
-- Present tense forms
-- Past and future tenses
-- Imperative mood
-- Sentence structure
-- Prepositions
-- Questions and negation
-- Numbers and counting
-- Family and relationships
+### Units 4-8: Core Grammar (25 lessons)
+- Unit 4: Definite Article (Ⲡⲓ, Ϯ, Ⲛⲓ)
+- Unit 5: Indefinite Article (ⲟⲩ, ϩⲁⲛ)
+- Unit 6: Subject Pronouns
+- Unit 7: Possessive Pronouns
+- Unit 8: "To Be" - Copula Sentences (ⲡⲉ, ⲧⲉ, ⲛⲉ)
 
-### Units 16-22: Biblical Passages (22 lessons)
-- Gospel readings (John, Matthew, Luke)
-- Liturgical texts
-- Common prayers (Lord's Prayer, Hail Mary)
+### Units 9-14: Verb System (30 lessons)
+- Unit 9: Common Verbs
+- Unit 10: Present Tense
+- Unit 11: Perfect/Past Tense
+- Unit 12: Future Tense
+- Unit 13: Imperative Mood (Commands)
+- Unit 14: Suffix Pronouns (Object Pronouns)
+
+### Units 15-25: Advanced Grammar (55 lessons)
+- Units 15-22: Core advanced grammar (prepositions, demonstratives, questions, negation, relative clauses, existentials, genitive, conditionals)
+- Units 23-25: Complex grammar (temporal clauses, causative, participles)
+
+### Units 26-30: Vocabulary & Application (35 lessons)
+- Unit 26: Extended Vocabulary
+- Units 27-30: Biblical & liturgical texts (Lord's Prayer, Gospels, Liturgy, Reading & Composition)
+
+### Units 31-45: Comprehensive Biblical & Liturgical Studies (62 lessons)
+- Advanced Gospel readings and analysis
+- Liturgical Coptic texts and prayers
 - Psalms and hymns
-- Scripture translations
-- Church vocabulary
+- Church vocabulary and usage
+- Reading comprehension and composition
+
+**Total: 45 units • 209 lessons • 1,670+ exercises**
 
 ## Feature Status
 
 ### Completed ✅
 - [x] Core learning system with 7 exercise types
-- [x] 22 units with 95+ lessons
+- [x] 45 units with 209 lessons and 1,670+ exercises
 - [x] Progress tracking and persistence
 - [x] Achievement system (15 achievements)
 - [x] Daily streak tracking
@@ -233,6 +245,8 @@ All stores use AsyncStorage for automatic persistence.
 - [x] Web platform support
 - [x] React Context state management
 - [x] AsyncStorage persistence
+- [x] Modular unit architecture
+- [x] Bohairic dialect corrections throughout curriculum
 
 ### In Progress 🚧
 - [ ] Audio pronunciation for all vocabulary words
