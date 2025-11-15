@@ -1,11 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   View,
   Text,
-  TextInput,
   StyleSheet,
-  KeyboardAvoidingView,
-  Platform,
   ScrollView,
 } from 'react-native';
 import { Button } from '../components';
@@ -16,14 +13,7 @@ interface WelcomeScreenProps {
 }
 
 export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onComplete }) => {
-  const [name, setName] = useState('');
   const { colors } = useTheme();
-
-  const handleStart = () => {
-    if (name.trim()) {
-      onComplete();
-    }
-  };
 
   const styles = StyleSheet.create({
     container: {
@@ -73,33 +63,10 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onComplete }) => {
       color: colors.textPrimary,
       lineHeight: 22,
     },
-    inputContainer: {
-      width: '100%',
-      marginTop: 32,
-      marginBottom: 24,
-    },
-    label: {
-      fontSize: 16,
-      fontWeight: '600',
-      color: colors.textPrimary,
-      marginBottom: 12,
-    },
-    input: {
-      backgroundColor: colors.surface,
-      borderWidth: 2,
-      borderColor: colors.border,
-      borderRadius: 12,
-      padding: 16,
-      fontSize: 16,
-      color: colors.textPrimary,
-    },
   });
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles.container}
-    >
+    <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.content}>
           <Text style={styles.title}>Welcome to CopticLingo!</Text>
@@ -126,27 +93,15 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onComplete }) => {
             </Text>
           </View>
 
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>What should we call you?</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Enter your name"
-              value={name}
-              onChangeText={setName}
-              autoCapitalize="words"
-              autoCorrect={false}
-            />
-          </View>
-
           <Button
             title="Start Learning"
-            onPress={handleStart}
-            disabled={!name.trim()}
+            onPress={onComplete}
             fullWidth
+            style={{ marginTop: 32 }}
           />
         </View>
       </ScrollView>
-    </KeyboardAvoidingView>
+    </View>
   );
 };
 

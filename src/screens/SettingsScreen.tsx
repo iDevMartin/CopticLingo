@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch, Alert } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Card, Button } from '../components';
 import { useProgressStore } from '../store/progressStore';
 import { useAchievementStore } from '../store/achievementStore';
@@ -67,7 +68,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ onBack }) => {
   const handleResetProgress = () => {
     Alert.alert(
       'Reset All Progress',
-      'Are you sure you want to reset all your progress? This will delete:\n\n• All completed lessons\n• XP and level\n• Streaks\n• Achievements\n• Review history\n\nThis action cannot be undone!',
+      'Are you sure you want to reset all your progress? This will delete:\n\n• All completed lessons\n• XP and level\n• Streaks\n• Achievements\n• Review history\n• Onboarding status\n\nThis action cannot be undone!',
       [
         {
           text: 'Cancel',
@@ -76,9 +77,15 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ onBack }) => {
         {
           text: 'Reset',
           style: 'destructive',
-          onPress: () => {
+          onPress: async () => {
             resetProgress();
-            Alert.alert('Progress Reset', 'Your progress has been reset successfully.');
+            // Also reset onboarding flag
+            try {
+              await AsyncStorage.removeItem('copticlingo-onboarding-complete');
+            } catch (e) {
+              console.warn('Failed to reset onboarding:', e);
+            }
+            Alert.alert('Progress Reset', 'Your progress has been reset successfully. Please restart the app to see the welcome screen.');
           },
         },
       ]

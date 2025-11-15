@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { WelcomeScreen } from './src/screens/WelcomeScreen';
 import { OnboardingScreen } from './src/screens/OnboardingScreen';
@@ -24,15 +25,23 @@ export default function App() {
   const [selectedLessonId, setSelectedLessonId] = useState<string | null>(null);
   const [reviewExercises, setReviewExercises] = useState<Exercise[]>([]);
   const [isReady, setIsReady] = useState(false);
+  const [isCheckingOnboarding, setIsCheckingOnboarding] = useState(true);
 
   useEffect(() => {
     async function prepare() {
       try {
         await audioService.initialize();
+
+        // Check if user has completed onboarding
+        const hasCompletedOnboarding = await AsyncStorage.getItem('copticlingo-onboarding-complete');
+        if (hasCompletedOnboarding === 'true') {
+          setCurrentScreen('home');
+        }
       } catch (e) {
-        console.warn('Failed to initialize audio:', e);
+        console.warn('Failed to initialize:', e);
       } finally {
         setIsReady(true);
+        setIsCheckingOnboarding(false);
       }
     }
 
@@ -43,7 +52,7 @@ export default function App() {
     };
   }, []);
 
-  if (!isReady) {
+  if (!isReady || isCheckingOnboarding) {
     return null;
   }
 
@@ -51,7 +60,13 @@ export default function App() {
     setCurrentScreen('onboarding');
   };
 
-  const handleOnboardingComplete = () => {
+  const handleOnboardingComplete = async () => {
+    // Mark onboarding as complete
+    try {
+      await AsyncStorage.setItem('copticlingo-onboarding-complete', 'true');
+    } catch (e) {
+      console.warn('Failed to save onboarding status:', e);
+    }
     setCurrentScreen('home');
   };
 
