@@ -20,6 +20,7 @@ import { ReviewProvider } from './src/store/reviewStore.tsx';
 import { SettingsProvider } from './src/store/settingsStore.tsx';
 import { UnitTestProvider } from './src/store/unitTestStore.tsx';
 import { ThemeProvider } from './src/theme/ThemeContext.tsx';
+import { ThemeColorUpdater } from './src/components/ThemeColorUpdater';
 
 type Screen = 'welcome' | 'onboarding' | 'home' | 'lesson' | 'profile' | 'review' | 'settings' | 'reviewLesson' | 'unitTest';
 
@@ -208,6 +209,7 @@ export default function App() {
     <SafeAreaProvider>
       <SettingsProvider>
         <ThemeProvider>
+          <ThemeColorUpdater />
           <ProgressProvider>
             <AchievementProvider>
               <ReviewProvider>
