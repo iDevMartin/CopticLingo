@@ -427,6 +427,17 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ onBack }) => {
       marginTop: 12,
       lineHeight: 16,
     },
+    footerTextContainer: {
+      alignItems: 'center',
+      paddingVertical: 32,
+      paddingHorizontal: 20,
+    },
+    footerText: {
+      fontSize: 14,
+      color: colors.textSecondary,
+      textAlign: 'center',
+      lineHeight: 22,
+    },
     footer: {
       height: 40,
     },
@@ -655,38 +666,6 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ onBack }) => {
           </TouchableOpacity>
         </Card>
 
-        {/* About */}
-        <Card style={styles.section}>
-          <Text style={styles.sectionTitle}>About</Text>
-
-          <TouchableOpacity style={styles.actionRow} onPress={handleVersionTap}>
-            <View style={styles.actionInfo}>
-              <Text style={styles.actionLabel}>Version</Text>
-              <Text style={styles.actionDescription}>
-                1.0.0{developerModeEnabled ? ' (Developer Mode)' : ''}
-              </Text>
-            </View>
-          </TouchableOpacity>
-
-          <View style={styles.divider} />
-
-          <TouchableOpacity style={styles.actionRow}>
-            <View style={styles.actionInfo}>
-              <Text style={styles.actionLabel}>Privacy Policy</Text>
-            </View>
-            <Text style={styles.actionArrow}>›</Text>
-          </TouchableOpacity>
-
-          <View style={styles.divider} />
-
-          <TouchableOpacity style={styles.actionRow}>
-            <View style={styles.actionInfo}>
-              <Text style={styles.actionLabel}>Terms of Service</Text>
-            </View>
-            <Text style={styles.actionArrow}>›</Text>
-          </TouchableOpacity>
-        </Card>
-
         {/* Data Management */}
         <Card style={styles.section}>
           <Text style={styles.sectionTitle}>Data Management</Text>
@@ -727,6 +706,44 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ onBack }) => {
             This will permanently delete all your progress, achievements, and data.
           </Text>
         </Card>
+
+        {/* About */}
+        <Card style={styles.section}>
+          <Text style={styles.sectionTitle}>About</Text>
+
+          <TouchableOpacity style={styles.actionRow} onPress={handleVersionTap}>
+            <View style={styles.actionInfo}>
+              <Text style={styles.actionLabel}>Version</Text>
+              <Text style={styles.actionDescription}>
+                1.0.0{developerModeEnabled ? ' (Developer Mode)' : ''}
+              </Text>
+            </View>
+          </TouchableOpacity>
+
+          <View style={styles.divider} />
+
+          <TouchableOpacity style={styles.actionRow}>
+            <View style={styles.actionInfo}>
+              <Text style={styles.actionLabel}>Privacy Policy</Text>
+            </View>
+            <Text style={styles.actionArrow}>›</Text>
+          </TouchableOpacity>
+
+          <View style={styles.divider} />
+
+          <TouchableOpacity style={styles.actionRow}>
+            <View style={styles.actionInfo}>
+              <Text style={styles.actionLabel}>Terms of Service</Text>
+            </View>
+            <Text style={styles.actionArrow}>›</Text>
+          </TouchableOpacity>
+        </Card>
+
+        {/* Footer */}
+        <View style={styles.footerTextContainer}>
+          <Text style={styles.footerText}>Designed by Martin B.</Text>
+          <Text style={styles.footerText}>Made with ❤️ in California</Text>
+        </View>
 
         {/* Footer spacing */}
         <View style={styles.footer} />

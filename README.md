@@ -418,7 +418,7 @@ For questions, suggestions, or contributions, please open an issue on GitHub.
 ---
 
 **Version**: 1.0.0
-**Last Updated**: January 12, 2025
+**Last Updated**: November 16, 2025
 **Status**: Active Development
 **Platforms**: iOS, Android, Web
 **Language**: Bohairic Coptic

@@ -490,8 +490,11 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                     unit.lessons
                   );
 
-                  // If lesson is completed (via unit test), ignore unit lock
-                  const isLocked = completed ? false : (locked || unitLocked);
+                  // First lesson of a unit respects unit lock
+                  // Subsequent lessons only care about previous lesson completion
+                  const isLocked = lesson.order === 1
+                    ? (completed ? false : (locked || unitLocked))
+                    : (completed ? false : locked);
                   const isCurrent = !isLocked && !completed;
 
                   return (
