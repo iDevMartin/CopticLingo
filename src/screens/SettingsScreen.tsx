@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch, Alert, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
+import * as DocumentPicker from 'expo-document-picker';
 import { Card, Button } from '../components';
 import { useProgressStore } from '../store/progressStore';
 import { useAchievementStore } from '../store/achievementStore';
@@ -101,6 +104,167 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ onBack }) => {
   const cancelReset = () => {
     console.log('Reset cancelled');
     setShowResetConfirmation(false);
+  };
+
+  const handleExportProgress = async () => {
+    try {
+      // Gather all data from AsyncStorage
+      const progressData = await AsyncStorage.getItem('copticlingo-progress');
+      const achievementsData = await AsyncStorage.getItem('copticlingo-achievements');
+      const reviewsData = await AsyncStorage.getItem('copticlingo-reviews');
+      const settingsData = await AsyncStorage.getItem('copticlingo-settings');
+      const onboardingData = await AsyncStorage.getItem('copticlingo-onboarding-complete');
+
+      const exportData = {
+        version: '1.0.0',
+        exportDate: new Date().toISOString(),
+        progress: progressData ? JSON.parse(progressData) : null,
+        achievements: achievementsData ? JSON.parse(achievementsData) : null,
+        reviews: reviewsData ? JSON.parse(reviewsData) : null,
+        settings: settingsData ? JSON.parse(settingsData) : null,
+        onboardingComplete: onboardingData === 'true',
+      };
+
+      const jsonString = JSON.stringify(exportData, null, 2);
+      const fileName = `copticlingo-backup-${new Date().toISOString().split('T')[0]}.json`;
+
+      if (Platform.OS === 'web') {
+        // Web: Download as file
+        const blob = new Blob([jsonString], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+
+        Alert.alert('Export Successful', `Your progress has been downloaded as ${fileName}`);
+      } else {
+        // Mobile: Save to file system and share
+        const fileUri = `${FileSystem.documentDirectory}${fileName}`;
+        await FileSystem.writeAsStringAsync(fileUri, jsonString);
+
+        const isAvailable = await Sharing.isAvailableAsync();
+        if (isAvailable) {
+          await Sharing.shareAsync(fileUri);
+        } else {
+          Alert.alert('Export Successful', `Progress saved to ${fileUri}`);
+        }
+      }
+    } catch (error) {
+      console.error('Export failed:', error);
+      Alert.alert('Export Failed', 'Unable to export progress. Please try again.');
+    }
+  };
+
+  const handleImportProgress = async () => {
+    try {
+      let jsonString: string | null = null;
+
+      if (Platform.OS === 'web') {
+        // Web: File input
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json';
+
+        input.onchange = async (e: any) => {
+          const file = e.target.files[0];
+          if (!file) return;
+
+          const reader = new FileReader();
+          reader.onload = async (event) => {
+            jsonString = event.target?.result as string;
+            await processImport(jsonString);
+          };
+          reader.readAsText(file);
+        };
+
+        input.click();
+      } else {
+        // Mobile: Document picker
+        const result = await DocumentPicker.getDocumentAsync({
+          type: 'application/json',
+          copyToCacheDirectory: true,
+        });
+
+        if (result.assets && result.assets.length > 0) {
+          const fileUri = result.assets[0].uri;
+          jsonString = await FileSystem.readAsStringAsync(fileUri);
+          await processImport(jsonString);
+        }
+      }
+    } catch (error) {
+      console.error('Import failed:', error);
+      Alert.alert('Import Failed', 'Unable to import progress. Please check the file and try again.');
+    }
+  };
+
+  const processImport = async (jsonString: string) => {
+    try {
+      const importData = JSON.parse(jsonString);
+
+      // Validate the import data
+      if (!importData.version || !importData.exportDate) {
+        Alert.alert('Invalid File', 'The selected file is not a valid CopticLingo backup.');
+        return;
+      }
+
+      // Show confirmation dialog
+      Alert.alert(
+        'Import Progress',
+        `This will replace your current progress with data from ${new Date(importData.exportDate).toLocaleDateString()}. Continue?`,
+        [
+          { text: 'Cancel', style: 'cancel' },
+          {
+            text: 'Import',
+            onPress: async () => {
+              try {
+                // Import all data
+                if (importData.progress) {
+                  await AsyncStorage.setItem('copticlingo-progress', JSON.stringify(importData.progress));
+                }
+                if (importData.achievements) {
+                  await AsyncStorage.setItem('copticlingo-achievements', JSON.stringify(importData.achievements));
+                }
+                if (importData.reviews) {
+                  await AsyncStorage.setItem('copticlingo-reviews', JSON.stringify(importData.reviews));
+                }
+                if (importData.settings) {
+                  await AsyncStorage.setItem('copticlingo-settings', JSON.stringify(importData.settings));
+                }
+                if (importData.onboardingComplete) {
+                  await AsyncStorage.setItem('copticlingo-onboarding-complete', 'true');
+                }
+
+                Alert.alert(
+                  'Import Successful',
+                  'Your progress has been restored. The app will now reload.',
+                  [
+                    {
+                      text: 'OK',
+                      onPress: () => {
+                        if (typeof window !== 'undefined' && window.location) {
+                          window.location.reload();
+                        } else {
+                          Alert.alert('Please Restart', 'Please restart the app to see your restored progress.');
+                        }
+                      },
+                    },
+                  ]
+                );
+              } catch (error) {
+                console.error('Import processing failed:', error);
+                Alert.alert('Import Failed', 'An error occurred while importing your progress.');
+              }
+            },
+          },
+        ]
+      );
+    } catch (error) {
+      Alert.alert('Invalid File', 'The selected file is not valid JSON or is corrupted.');
+    }
   };
 
   const unlockedAchievementsCount = achievements.filter(a => a.unlocked).length;
@@ -234,6 +398,13 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ onBack }) => {
     dangerWarning: {
       fontSize: 12,
       color: '#991b1b',
+      textAlign: 'center',
+      marginTop: 12,
+      lineHeight: 16,
+    },
+    dataManagementInfo: {
+      fontSize: 12,
+      color: colors.textTertiary,
       textAlign: 'center',
       marginTop: 12,
       lineHeight: 16,
@@ -496,6 +667,30 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ onBack }) => {
             </View>
             <Text style={styles.actionArrow}>›</Text>
           </TouchableOpacity>
+        </Card>
+
+        {/* Data Management */}
+        <Card style={styles.section}>
+          <Text style={styles.sectionTitle}>Data Management</Text>
+
+          <Button
+            title="Export Progress"
+            onPress={handleExportProgress}
+            variant="secondary"
+            fullWidth
+            style={{ marginBottom: 12 }}
+          />
+
+          <Button
+            title="Import Progress"
+            onPress={handleImportProgress}
+            variant="secondary"
+            fullWidth
+          />
+
+          <Text style={styles.dataManagementInfo}>
+            Export your progress to backup or transfer to another device. Import to restore from a previous backup.
+          </Text>
         </Card>
 
         {/* Danger Zone */}
