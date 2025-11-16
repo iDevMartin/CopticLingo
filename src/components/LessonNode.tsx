@@ -8,6 +8,7 @@ interface LessonNodeProps {
   locked: boolean;
   completed: boolean;
   current?: boolean;
+  icon?: string;
   onPress: () => void;
 }
 
@@ -17,6 +18,7 @@ export const LessonNode: React.FC<LessonNodeProps> = ({
   locked,
   completed,
   current = false,
+  icon,
   onPress,
 }) => {
   const { colors } = useTheme();
@@ -68,7 +70,7 @@ export const LessonNode: React.FC<LessonNodeProps> = ({
         activeOpacity={0.7}
       >
         <Text style={[styles.icon, locked && styles.lockedIcon]}>
-          {completed ? '✓' : locked ? '🔒' : '📖'}
+          {icon || (completed ? '✓' : locked ? '🔒' : '📖')}
         </Text>
       </TouchableOpacity>
       <Text style={styles.title} numberOfLines={2}>

@@ -38,6 +38,8 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ onBack }) => {
   const [versionTapCount, setVersionTapCount] = useState(0);
   const [lastTapTime, setLastTapTime] = useState(0);
   const [showResetConfirmation, setShowResetConfirmation] = useState(false);
+  const [showImportConfirmation, setShowImportConfirmation] = useState(false);
+  const [pendingImportData, setPendingImportData] = useState<any>(null);
 
   const handleVersionTap = () => {
     const now = Date.now();
@@ -114,6 +116,8 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ onBack }) => {
       const reviewsData = await AsyncStorage.getItem('copticlingo-reviews');
       const settingsData = await AsyncStorage.getItem('copticlingo-settings');
       const onboardingData = await AsyncStorage.getItem('copticlingo-onboarding-complete');
+      const unitTestProgressData = await AsyncStorage.getItem('copticlingo-unit-test-progress');
+      const unitTestHistoryData = await AsyncStorage.getItem('copticlingo-unit-test-history');
 
       const exportData = {
         version: '1.0.0',
@@ -123,6 +127,8 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ onBack }) => {
         reviews: reviewsData ? JSON.parse(reviewsData) : null,
         settings: settingsData ? JSON.parse(settingsData) : null,
         onboardingComplete: onboardingData === 'true',
+        unitTestProgress: unitTestProgressData ? JSON.parse(unitTestProgressData) : null,
+        unitTestHistory: unitTestHistoryData ? JSON.parse(unitTestHistoryData) : null,
       };
 
       const jsonString = JSON.stringify(exportData, null, 2);
@@ -203,68 +209,80 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ onBack }) => {
 
   const processImport = async (jsonString: string) => {
     try {
+      console.log('Processing import, jsonString length:', jsonString?.length);
       const importData = JSON.parse(jsonString);
+      console.log('Import data parsed:', Object.keys(importData));
 
       // Validate the import data
       if (!importData.version || !importData.exportDate) {
+        console.error('Invalid import data:', importData);
         Alert.alert('Invalid File', 'The selected file is not a valid CopticLingo backup.');
         return;
       }
 
-      // Show confirmation dialog
-      Alert.alert(
-        'Import Progress',
-        `This will replace your current progress with data from ${new Date(importData.exportDate).toLocaleDateString()}. Continue?`,
-        [
-          { text: 'Cancel', style: 'cancel' },
-          {
-            text: 'Import',
-            onPress: async () => {
-              try {
-                // Import all data
-                if (importData.progress) {
-                  await AsyncStorage.setItem('copticlingo-progress', JSON.stringify(importData.progress));
-                }
-                if (importData.achievements) {
-                  await AsyncStorage.setItem('copticlingo-achievements', JSON.stringify(importData.achievements));
-                }
-                if (importData.reviews) {
-                  await AsyncStorage.setItem('copticlingo-reviews', JSON.stringify(importData.reviews));
-                }
-                if (importData.settings) {
-                  await AsyncStorage.setItem('copticlingo-settings', JSON.stringify(importData.settings));
-                }
-                if (importData.onboardingComplete) {
-                  await AsyncStorage.setItem('copticlingo-onboarding-complete', 'true');
-                }
+      console.log('Import data validated, showing confirmation...');
 
-                Alert.alert(
-                  'Import Successful',
-                  'Your progress has been restored. The app will now reload.',
-                  [
-                    {
-                      text: 'OK',
-                      onPress: () => {
-                        if (typeof window !== 'undefined' && window.location) {
-                          window.location.reload();
-                        } else {
-                          Alert.alert('Please Restart', 'Please restart the app to see your restored progress.');
-                        }
-                      },
-                    },
-                  ]
-                );
-              } catch (error) {
-                console.error('Import processing failed:', error);
-                Alert.alert('Import Failed', 'An error occurred while importing your progress.');
-              }
-            },
-          },
-        ]
-      );
+      // Store the import data and show confirmation modal
+      setPendingImportData(importData);
+      setShowImportConfirmation(true);
     } catch (error) {
       Alert.alert('Invalid File', 'The selected file is not valid JSON or is corrupted.');
     }
+  };
+
+  const handleConfirmImport = async () => {
+    if (!pendingImportData) return;
+
+    setShowImportConfirmation(false);
+
+    try {
+      console.log('User confirmed import, starting data restore...');
+      // Import all data
+      if (pendingImportData.progress) {
+        await AsyncStorage.setItem('copticlingo-progress', JSON.stringify(pendingImportData.progress));
+        console.log('Progress restored');
+      }
+      if (pendingImportData.achievements) {
+        await AsyncStorage.setItem('copticlingo-achievements', JSON.stringify(pendingImportData.achievements));
+        console.log('Achievements restored');
+      }
+      if (pendingImportData.reviews) {
+        await AsyncStorage.setItem('copticlingo-reviews', JSON.stringify(pendingImportData.reviews));
+        console.log('Reviews restored');
+      }
+      if (pendingImportData.settings) {
+        await AsyncStorage.setItem('copticlingo-settings', JSON.stringify(pendingImportData.settings));
+        console.log('Settings restored');
+      }
+      if (pendingImportData.onboardingComplete) {
+        await AsyncStorage.setItem('copticlingo-onboarding-complete', 'true');
+        console.log('Onboarding status restored');
+      }
+      if (pendingImportData.unitTestProgress) {
+        await AsyncStorage.setItem('copticlingo-unit-test-progress', JSON.stringify(pendingImportData.unitTestProgress));
+        console.log('Unit test progress restored');
+      }
+      if (pendingImportData.unitTestHistory) {
+        await AsyncStorage.setItem('copticlingo-unit-test-history', JSON.stringify(pendingImportData.unitTestHistory));
+        console.log('Unit test history restored');
+      }
+
+      console.log('All data restored successfully');
+
+      // Reload the page
+      if (typeof window !== 'undefined' && window.location) {
+        window.location.reload();
+      }
+    } catch (error) {
+      console.error('Import processing failed:', error);
+      Alert.alert('Import Failed', 'An error occurred while importing your progress.');
+    }
+  };
+
+  const handleCancelImport = () => {
+    console.log('Import cancelled by user');
+    setShowImportConfirmation(false);
+    setPendingImportData(null);
   };
 
   const unlockedAchievementsCount = achievements.filter(a => a.unlocked).length;
@@ -735,6 +753,28 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ onBack }) => {
               </TouchableOpacity>
               <TouchableOpacity style={styles.modalButtonConfirm} onPress={confirmReset}>
                 <Text style={styles.modalButtonTextConfirm}>Reset</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      )}
+
+      {/* Import Confirmation Modal */}
+      {showImportConfirmation && pendingImportData && (
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Import Progress?</Text>
+            <Text style={styles.modalMessage}>
+              This will replace your current progress with data from{'\n'}
+              {new Date(pendingImportData.exportDate).toLocaleDateString()}.{'\n\n'}
+              Your current progress will be lost. Continue?
+            </Text>
+            <View style={styles.modalButtons}>
+              <TouchableOpacity style={styles.modalButtonCancel} onPress={handleCancelImport}>
+                <Text style={styles.modalButtonTextCancel}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.modalButtonConfirm} onPress={handleConfirmImport}>
+                <Text style={styles.modalButtonTextConfirm}>Import</Text>
               </TouchableOpacity>
             </View>
           </View>

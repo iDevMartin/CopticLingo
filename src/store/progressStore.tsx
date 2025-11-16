@@ -7,6 +7,7 @@ interface ProgressState extends UserProgress {
   addVocabulary: (word: string) => void;
   addMistake: (word: string) => void;
   updateStreak: () => void;
+  unlockLessonsByUnit: (unitOrder: number, xpGained: number) => void;
   resetProgress: () => void;
 }
 
@@ -129,6 +130,43 @@ export const ProgressProvider: React.FC<{ children: ReactNode }> = ({ children }
     });
   };
 
+  const unlockLessonsByUnit = (unitOrder: number, xpGained: number) => {
+    // Import lessons data to get lesson IDs
+    import('../data/lessons').then(({ copticUnits }) => {
+      setProgress(state => {
+        // Get all lesson IDs from current unit and all previous units
+        const lessonIdsToUnlock: string[] = [];
+
+        console.log(`Unlocking lessons for unit ${unitOrder} and all previous units`);
+        copticUnits.forEach((unit) => {
+          if (unit.order <= unitOrder) {
+            console.log(`Unit ${unit.order} (${unit.title}): unlocking ${unit.lessons.length} lessons`);
+            unit.lessons.forEach((lesson) => {
+              lessonIdsToUnlock.push(lesson.id);
+            });
+          }
+        });
+
+        console.log(`Total lessons to unlock: ${lessonIdsToUnlock.length}`);
+        console.log(`Previously completed: ${state.completedLessons.length}`);
+
+        // Merge with existing completed lessons (no duplicates)
+        const newCompletedLessons = [...new Set([...state.completedLessons, ...lessonIdsToUnlock])];
+        const newTotalXP = state.totalXP + xpGained;
+        const newLevel = Math.floor(newTotalXP / 100) + 1;
+
+        console.log(`After unlock: ${newCompletedLessons.length} completed lessons`);
+
+        return {
+          ...state,
+          completedLessons: newCompletedLessons,
+          totalXP: newTotalXP,
+          level: newLevel,
+        };
+      });
+    });
+  };
+
   const resetProgress = () => {
     setProgress(initialProgress);
   };
@@ -145,6 +183,7 @@ export const ProgressProvider: React.FC<{ children: ReactNode }> = ({ children }
         addVocabulary,
         addMistake,
         updateStreak,
+        unlockLessonsByUnit,
         resetProgress,
       }}
     >

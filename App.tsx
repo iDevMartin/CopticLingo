@@ -11,19 +11,22 @@ import { ProfileScreen } from './src/screens/ProfileScreen';
 import { ReviewScreen } from './src/screens/ReviewScreen';
 import { ReviewLessonScreen } from './src/screens/ReviewLessonScreen';
 import { SettingsScreen } from './src/screens/SettingsScreen';
+import { UnitTestScreen } from './src/screens/UnitTestScreen';
 import { audioService } from './src/utils/audioService';
 import { Exercise } from './src/types';
 import { ProgressProvider } from './src/store/progressStore.tsx';
 import { AchievementProvider } from './src/store/achievementStore.tsx';
 import { ReviewProvider } from './src/store/reviewStore.tsx';
 import { SettingsProvider } from './src/store/settingsStore.tsx';
+import { UnitTestProvider } from './src/store/unitTestStore.tsx';
 import { ThemeProvider } from './src/theme/ThemeContext.tsx';
 
-type Screen = 'welcome' | 'onboarding' | 'home' | 'lesson' | 'profile' | 'review' | 'settings' | 'reviewLesson';
+type Screen = 'welcome' | 'onboarding' | 'home' | 'lesson' | 'profile' | 'review' | 'settings' | 'reviewLesson' | 'unitTest';
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('welcome');
   const [selectedLessonId, setSelectedLessonId] = useState<string | null>(null);
+  const [selectedUnitTestId, setSelectedUnitTestId] = useState<string | null>(null);
   const [reviewExercises, setReviewExercises] = useState<Exercise[]>([]);
   const [isReady, setIsReady] = useState(false);
   const [isCheckingOnboarding, setIsCheckingOnboarding] = useState(true);
@@ -125,6 +128,21 @@ export default function App() {
     setCurrentScreen('home');
   };
 
+  const handleUnitTestPress = (testId: string) => {
+    setSelectedUnitTestId(testId);
+    setCurrentScreen('unitTest');
+  };
+
+  const handleUnitTestComplete = () => {
+    setSelectedUnitTestId(null);
+    setCurrentScreen('home');
+  };
+
+  const handleUnitTestExit = () => {
+    setSelectedUnitTestId(null);
+    setCurrentScreen('home');
+  };
+
   const renderScreen = () => {
     switch (currentScreen) {
       case 'welcome':
@@ -138,6 +156,7 @@ export default function App() {
             onProfilePress={handleProfilePress}
             onReviewPress={handleReviewPress}
             onSettingsPress={handleSettingsPress}
+            onUnitTestPress={handleUnitTestPress}
           />
         );
       case 'lesson':
@@ -172,6 +191,14 @@ export default function App() {
         ) : null;
       case 'settings':
         return <SettingsScreen onBack={handleSettingsBack} />;
+      case 'unitTest':
+        return selectedUnitTestId ? (
+          <UnitTestScreen
+            testId={selectedUnitTestId}
+            onComplete={handleUnitTestComplete}
+            onExit={handleUnitTestExit}
+          />
+        ) : null;
       default:
         return <WelcomeScreen onComplete={handleWelcomeComplete} />;
     }
@@ -184,9 +211,11 @@ export default function App() {
           <ProgressProvider>
             <AchievementProvider>
               <ReviewProvider>
-                <StatusBar style="auto" />
-                {renderScreen()}
-                <Analytics />
+                <UnitTestProvider>
+                  <StatusBar style="auto" />
+                  {renderScreen()}
+                  <Analytics />
+                </UnitTestProvider>
               </ReviewProvider>
             </AchievementProvider>
           </ProgressProvider>

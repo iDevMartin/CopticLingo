@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
 import { LessonNode, Card } from '../components';
 import { copticUnits } from '../data/lessons';
+import { copticUnitTests } from '../data/tests/unit-tests';
 import { useProgressStore } from '../store/progressStore';
+import { useUnitTestStore } from '../store/unitTestStore';
 import { useSettingsStore } from '../store/settingsStore';
 import { useTheme } from '../theme/ThemeContext';
 
@@ -11,6 +13,7 @@ interface HomeScreenProps {
   onProfilePress: () => void;
   onReviewPress: () => void;
   onSettingsPress: () => void;
+  onUnitTestPress: (testId: string) => void;
 }
 
 export const HomeScreen: React.FC<HomeScreenProps> = ({
@@ -18,12 +21,21 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   onProfilePress,
   onReviewPress,
   onSettingsPress,
+  onUnitTestPress,
 }) => {
   const { completedLessons, totalXP, currentStreak, level } = useProgressStore();
+  const { hasPassedTest, getTestProgress } = useUnitTestStore();
   const { developerModeEnabled } = useSettingsStore();
   const { colors } = useTheme();
   const [isSmallScreen, setIsSmallScreen] = useState(Dimensions.get('window').width < 500);
   const [showDevModeModal, setShowDevModeModal] = useState(false);
+
+  // Debug: Log test data on mount
+  useEffect(() => {
+    console.log('Total copticUnitTests loaded:', copticUnitTests.length);
+    console.log('Unit IDs in tests:', copticUnitTests.map(t => t.unitId));
+    console.log('Unit IDs in units:', copticUnits.map(u => u.id));
+  }, []);
 
   useEffect(() => {
     const subscription = Dimensions.addEventListener('change', ({ window }) => {
@@ -44,14 +56,21 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
       return { locked: false, completed: isCompleted };
     }
 
-    if (lessonOrder === 1) {
-      return { locked: false, completed: isCompleted };
+    // If lesson is already completed (e.g., via unit test), it should be unlocked
+    if (isCompleted) {
+      return { locked: false, completed: true };
     }
 
+    // First lesson is always unlocked
+    if (lessonOrder === 1) {
+      return { locked: false, completed: false };
+    }
+
+    // Check if previous lesson is completed
     const previousLesson = unitLessons[lessonOrder - 2];
     const isPreviousCompleted = completedLessons.includes(previousLesson.id);
 
-    return { locked: !isPreviousCompleted, completed: isCompleted };
+    return { locked: !isPreviousCompleted, completed: false };
   };
 
   const getUnitLocked = (unitOrder: number) => {
@@ -62,12 +81,35 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 
     if (unitOrder === 1) return false;
 
+    // Check if previous unit test was passed
     const previousUnit = copticUnits[unitOrder - 2];
+    const previousUnitTest = copticUnitTests.find(t => t.unitId === previousUnit.id);
+
+    if (previousUnitTest) {
+      return !hasPassedTest(previousUnitTest.id);
+    }
+
+    // Fallback: check if all previous lessons completed
     const allPreviousLessonsCompleted = previousUnit.lessons.every(lesson =>
       completedLessons.includes(lesson.id)
     );
 
     return !allPreviousLessonsCompleted;
+  };
+
+  const getUnitTestStatus = (unitId: string) => {
+    const unitTest = copticUnitTests.find(t => t.unitId === unitId);
+    if (!unitTest) return { visible: false, locked: true, passed: false };
+
+    const testProgress = getTestProgress(unitTest.id);
+
+    // Unit tests are ALWAYS unlocked for everyone (not just developer mode)
+    // This allows users to skip ahead by proving proficiency
+    return {
+      visible: true,
+      locked: false,
+      passed: testProgress?.passed || false,
+    };
   };
 
   const styles = StyleSheet.create({
@@ -215,6 +257,42 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
       gap: 16,
       justifyContent: 'space-evenly',
     },
+    unitTestButton: {
+      width: '100%',
+      marginTop: 16,
+      padding: 16,
+      borderRadius: 12,
+      backgroundColor: colors.surface,
+      borderWidth: 2,
+      borderColor: colors.primary,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 8,
+    },
+    unitTestButtonLocked: {
+      backgroundColor: colors.surface,
+      borderColor: colors.border,
+      opacity: 0.5,
+    },
+    unitTestButtonPassed: {
+      backgroundColor: '#10B98120',
+      borderColor: '#10B981',
+    },
+    unitTestIcon: {
+      fontSize: 24,
+    },
+    unitTestText: {
+      fontSize: 16,
+      fontWeight: '700',
+      color: colors.primary,
+    },
+    unitTestTextLocked: {
+      color: colors.textSecondary,
+    },
+    unitTestTextPassed: {
+      color: '#10B981',
+    },
     modalOverlay: {
       position: 'absolute',
       top: 0,
@@ -312,6 +390,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
         {copticUnits.map((unit) => {
           const unitLocked = getUnitLocked(unit.order);
+          const unitTest = copticUnitTests.find(t => t.unitId === unit.id);
+          const testStatus = getUnitTestStatus(unit.id);
 
           return (
             <View key={unit.id} style={styles.unitContainer}>
@@ -328,7 +408,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                     unit.lessons
                   );
 
-                  const isLocked = locked || unitLocked;
+                  // If lesson is completed (via unit test), ignore unit lock
+                  const isLocked = completed ? false : (locked || unitLocked);
                   const isCurrent = !isLocked && !completed;
 
                   return (
@@ -343,6 +424,33 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                     />
                   );
                 })}
+
+                {/* Unit Test as a Lesson Node */}
+                {testStatus.visible && unitTest && (
+                  <LessonNode
+                    key={`test-${unit.id}`}
+                    title={`Unit ${unit.order} Test`}
+                    color={testStatus.passed ? '#10B981' : unit.color}
+                    locked={testStatus.locked}
+                    completed={testStatus.passed}
+                    current={!testStatus.locked && !testStatus.passed}
+                    icon={testStatus.passed ? '⭐' : '📝'}
+                    onPress={() => !testStatus.locked && onUnitTestPress(unitTest.id)}
+                  />
+                )}
+
+                {/* Debug: Show if test is missing */}
+                {!unitTest && developerModeEnabled && (
+                  <LessonNode
+                    key={`test-missing-${unit.id}`}
+                    title={`⚠️ No test for ${unit.id}`}
+                    color="#EF4444"
+                    locked={true}
+                    completed={false}
+                    current={false}
+                    onPress={() => {}}
+                  />
+                )}
               </View>
             </View>
           );
