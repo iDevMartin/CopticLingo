@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { Analytics } from '@vercel/analytics/react';
 import { WelcomeScreen } from './src/screens/WelcomeScreen';
 import { OnboardingScreen } from './src/screens/OnboardingScreen';
 import { HomeScreen } from './src/screens/HomeScreen';
@@ -185,6 +186,7 @@ export default function App() {
               <ReviewProvider>
                 <StatusBar style="auto" />
                 {renderScreen()}
+                <Analytics />
               </ReviewProvider>
             </AchievementProvider>
           </ProgressProvider>
