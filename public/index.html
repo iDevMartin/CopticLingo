@@ -7,9 +7,9 @@
 
     <!-- PWA Configuration -->
     <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#10B981">
+    <meta name="theme-color" content="#FFFFFF">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="CopticLingo">
     <meta name="description" content="Learn Bohairic Coptic through interactive lessons">
 
@@ -21,15 +21,20 @@
       html,
       body {
         height: 100%;
+        margin: 0;
+        padding: 0;
+        width: 100%;
       }
       /* These styles disable body scrolling if you are using <ScrollView> */
       body {
         overflow: hidden;
+        background-color: #FFFFFF;
       }
       /* These styles make the root element full-height */
       #root {
         display: flex;
         height: 100%;
+        width: 100%;
         flex: 1;
       }
     </style>
