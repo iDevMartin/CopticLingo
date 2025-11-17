@@ -7,6 +7,7 @@ interface ProgressState extends UserProgress {
   addVocabulary: (word: string) => void;
   addMistake: (word: string) => void;
   updateStreak: () => void;
+  checkStreakStatus: () => void;
   unlockLessonsByUnit: (unitOrder: number, xpGained: number) => void;
   resetProgress: () => void;
 }
@@ -35,7 +36,25 @@ export const ProgressProvider: React.FC<{ children: ReactNode }> = ({ children }
       try {
         const stored = await AsyncStorage.getItem('copticlingo-progress');
         if (stored) {
-          setProgress(JSON.parse(stored));
+          const loadedProgress = JSON.parse(stored);
+
+          // Check if streak needs to be reset (without updating lastPracticeDate)
+          const today = new Date().toISOString().split('T')[0];
+          const lastPractice = loadedProgress.lastPracticeDate;
+
+          if (lastPractice) {
+            const lastDate = new Date(lastPractice);
+            const currentDate = new Date(today);
+            const diffTime = currentDate.getTime() - lastDate.getTime();
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+            // If more than 1 day has passed, reset streak but keep lastPracticeDate unchanged
+            if (diffDays > 1) {
+              loadedProgress.currentStreak = 0;
+            }
+          }
+
+          setProgress(loadedProgress);
         }
       } catch (error) {
         console.warn('Failed to load progress:', error);
@@ -104,11 +123,11 @@ export const ProgressProvider: React.FC<{ children: ReactNode }> = ({ children }
       const diffTime = currentDate.getTime() - lastDate.getTime();
       const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
-      // Same day - no change to streak
+      // Same day - no change to streak, but don't update lastPracticeDate
       if (diffDays === 0) {
         return state;
       }
-      // Next day - increment streak
+      // Next day - increment streak and update lastPracticeDate
       else if (diffDays === 1) {
         const newStreak = state.currentStreak + 1;
         return {
@@ -118,13 +137,43 @@ export const ProgressProvider: React.FC<{ children: ReactNode }> = ({ children }
           lastPracticeDate: today,
         };
       }
-      // Missed days - reset to 1
+      // Missed days - reset to 1 and update lastPracticeDate
       else {
         return {
           ...state,
           currentStreak: 1,
           longestStreak: state.longestStreak,
           lastPracticeDate: today,
+        };
+      }
+    });
+  };
+
+  const checkStreakStatus = () => {
+    setProgress(state => {
+      const today = new Date().toISOString().split('T')[0];
+      const lastPractice = state.lastPracticeDate;
+
+      // No previous practice date, don't change anything
+      if (!lastPractice) {
+        return state;
+      }
+
+      const lastDate = new Date(lastPractice);
+      const currentDate = new Date(today);
+      const diffTime = currentDate.getTime() - lastDate.getTime();
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+      // Same day or next day - streak is still valid, don't change anything
+      if (diffDays <= 1) {
+        return state;
+      }
+      // Missed days - reset streak but DON'T update lastPracticeDate
+      // (it will be updated when they actually complete a lesson)
+      else {
+        return {
+          ...state,
+          currentStreak: 0,
         };
       }
     });
@@ -183,6 +232,7 @@ export const ProgressProvider: React.FC<{ children: ReactNode }> = ({ children }
         addVocabulary,
         addMistake,
         updateStreak,
+        checkStreakStatus,
         unlockLessonsByUnit,
         resetProgress,
       }}
