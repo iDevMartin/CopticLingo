@@ -35,7 +35,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ onBack, onSettings
       justifyContent: 'space-between',
       alignItems: 'center',
       padding: 20,
-      paddingTop: 60,
+      paddingTop: 30,
       backgroundColor: colors.surface,
       borderBottomWidth: 1,
       borderBottomColor: colors.border,
