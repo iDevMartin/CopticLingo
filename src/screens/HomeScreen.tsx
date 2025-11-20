@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions, Image } from 'react-native';
-import { LessonNode, Card } from '../components';
+import { LessonNode, Card, SectionCard } from '../components';
 import { copticUnits } from '../data/lessons';
 import { copticUnitTests } from '../data/tests/unit-tests';
+import { sections, getUnitsInSection } from '../data/sections';
 import { useProgressStore } from '../store/progressStore';
+import { useAchievementStore } from '../store/achievementStore';
 import { useUnitTestStore } from '../store/unitTestStore';
 import { useSettingsStore } from '../store/settingsStore';
 import { useTheme } from '../theme/ThemeContext';
@@ -34,9 +36,54 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   const [isSmallScreen, setIsSmallScreen] = useState(Dimensions.get('window').width < 500);
   const [showDevModeModal, setShowDevModeModal] = useState(false);
   const [showScrollToTop, setShowScrollToTop] = useState(false);
+  const [expandedSections, setExpandedSections] = useState<{ [key: string]: boolean }>({});
+  const [currentSectionId, setCurrentSectionId] = useState<string | null>(null);
+  const hasAutoScrolled = useRef(false);
   const scrollViewRef = useRef<ScrollView>(null);
+  const sectionRefs = useRef<{ [key: string]: View | null }>({});
   const currentScrollY = useRef(0);
   const screenHeight = Dimensions.get('window').height;
+
+  // Find current section (section with first incomplete lesson)
+  const findCurrentSection = () => {
+    for (const section of sections) {
+      const units = getUnitsInSection(section.id, copticUnits);
+      for (const unit of units) {
+        const hasIncomplete = unit.lessons.some((lesson: any) => !completedLessons.includes(lesson.id));
+        if (hasIncomplete) {
+          return section.id;
+        }
+      }
+    }
+    return sections[0].id; // Default to first section
+  };
+
+  // Auto-expand current section on mount
+  useEffect(() => {
+    const currentSection = findCurrentSection();
+    setCurrentSectionId(currentSection);
+    setExpandedSections({ [currentSection]: true });
+  }, []);
+
+  // Auto-scroll to current section ONCE after initial render
+  useEffect(() => {
+    if (!hasAutoScrolled.current && currentSectionId && sectionRefs.current[currentSectionId] && scrollViewRef.current) {
+      // Small delay to ensure layout is complete
+      setTimeout(() => {
+        sectionRefs.current[currentSectionId]?.measureLayout(
+          scrollViewRef.current as any,
+          (x, y) => {
+            // Scroll to section with some offset from top
+            scrollViewRef.current?.scrollTo({ y: Math.max(0, y - 20), animated: true });
+            hasAutoScrolled.current = true;
+          },
+          () => {
+            console.log('[HomeScreen] Failed to measure section layout');
+          }
+        );
+      }, 500);
+    }
+  }, [currentSectionId]);
 
   // Restore scroll position when returning to home screen
   useEffect(() => {
@@ -81,6 +128,32 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   const handleScrollToTop = () => {
     scrollViewRef.current?.scrollTo({ y: 0, animated: true });
   };
+
+  const handleScrollToCurrent = () => {
+    if (currentSectionId && sectionRefs.current[currentSectionId]) {
+      sectionRefs.current[currentSectionId]?.measureLayout(
+        scrollViewRef.current as any,
+        (x, y) => {
+          scrollViewRef.current?.scrollTo({ y: Math.max(0, y - 20), animated: true });
+        },
+        () => {
+          console.log('[HomeScreen] Failed to measure section layout for scroll');
+        }
+      );
+    }
+  };
+
+  const handleToggleSection = (sectionId: string) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [sectionId]: !prev[sectionId],
+    }));
+  };
+
+  // Calculate overall progress
+  const totalLessons = copticUnits.reduce((acc, unit) => acc + unit.lessons.length, 0);
+  const completedCount = completedLessons.length;
+  const overallProgress = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
 
   const handleProfilePress = () => {
     // Save current scroll position before navigating
@@ -294,63 +367,46 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
     scrollContent: {
       padding: 20,
     },
-    unitContainer: {
-      marginBottom: 32,
+    overviewCard: {
+      padding: 20,
+      marginBottom: 20,
+      marginTop: 20,
     },
-    unitHeader: {
-      marginBottom: 16,
-    },
-    unitTitle: {
+    overviewTitle: {
       fontSize: 20,
       fontWeight: '700',
       color: colors.textPrimary,
-      marginBottom: 4,
+      marginBottom: 12,
     },
-    unitDescription: {
-      fontSize: 14,
-      color: colors.textSecondary,
-    },
-    lessonsContainer: {
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      gap: 16,
-      justifyContent: 'space-evenly',
-    },
-    unitTestButton: {
-      width: '100%',
-      marginTop: 16,
-      padding: 16,
-      borderRadius: 12,
-      backgroundColor: colors.surface,
-      borderWidth: 2,
-      borderColor: colors.primary,
+    overviewStats: {
       flexDirection: 'row',
       alignItems: 'center',
-      justifyContent: 'center',
       gap: 8,
+      marginBottom: 16,
+      flexWrap: 'wrap',
     },
-    unitTestButtonLocked: {
-      backgroundColor: colors.surface,
-      borderColor: colors.border,
-      opacity: 0.5,
-    },
-    unitTestButtonPassed: {
-      backgroundColor: '#10B98120',
-      borderColor: '#10B981',
-    },
-    unitTestIcon: {
-      fontSize: 24,
-    },
-    unitTestText: {
-      fontSize: 16,
-      fontWeight: '700',
-      color: colors.primary,
-    },
-    unitTestTextLocked: {
+    overviewStat: {
+      fontSize: 14,
+      fontWeight: '600',
       color: colors.textSecondary,
     },
-    unitTestTextPassed: {
-      color: '#10B981',
+    overviewProgressBar: {
+      height: 8,
+      backgroundColor: colors.border,
+      borderRadius: 4,
+      marginBottom: 8,
+      overflow: 'hidden',
+    },
+    overviewProgressFill: {
+      height: '100%',
+      backgroundColor: colors.primary,
+      borderRadius: 4,
+    },
+    overviewProgressText: {
+      fontSize: 14,
+      fontWeight: '600',
+      color: colors.primary,
+      textAlign: 'center',
     },
     modalOverlay: {
       position: 'absolute',
@@ -396,6 +452,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
       color: '#FFFFFF',
       textAlign: 'center',
     },
+    bottomPadding: {
+      height: 40,
+    },
     scrollToTopButton: {
       position: 'absolute',
       bottom: 24,
@@ -414,6 +473,27 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
       zIndex: 999,
     },
     scrollToTopIcon: {
+      fontSize: 24,
+      color: '#FFFFFF',
+    },
+    jumpToCurrentButton: {
+      position: 'absolute',
+      bottom: 24,
+      right: 90,
+      width: 56,
+      height: 56,
+      borderRadius: 28,
+      backgroundColor: colors.accent || colors.primary,
+      justifyContent: 'center',
+      alignItems: 'center',
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.25,
+      shadowRadius: 4,
+      elevation: 5,
+      zIndex: 999,
+    },
+    jumpToCurrentIcon: {
       fontSize: 24,
       color: '#FFFFFF',
     },
@@ -475,7 +555,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         </ScrollView>
       </View>
 
-      {/* Skill Tree */}
+      {/* Learning Path */}
       <ScrollView
         ref={scrollViewRef}
         style={styles.scrollView}
@@ -491,76 +571,56 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         }}
         scrollEventThrottle={16}
       >
-        {copticUnits.map((unit) => {
-          const unitLocked = getUnitLocked(unit.order);
-          const unitTest = copticUnitTests.find(t => t.unitId === unit.id);
-          const testStatus = getUnitTestStatus(unit.id);
+        {/* Section Cards */}
+        {sections.map((section) => {
+          const units = getUnitsInSection(section.id, copticUnits);
+          const isExpanded = expandedSections[section.id] || false;
+          console.log('[HomeScreen] Section:', section.id, 'units:', units.length, 'expanded:', isExpanded);
 
           return (
-            <View key={unit.id} style={styles.unitContainer}>
-              <View style={styles.unitHeader}>
-                <Text style={styles.unitTitle}>{unit.title}</Text>
-                <Text style={styles.unitDescription}>{unit.description}</Text>
-              </View>
-
-              <View style={styles.lessonsContainer}>
-                {unit.lessons.map((lesson) => {
-                  const { locked, completed } = getLessonStatus(
-                    lesson.id,
-                    lesson.order,
-                    unit.lessons
-                  );
-
-                  // First lesson of a unit respects unit lock
-                  // Subsequent lessons only care about previous lesson completion
-                  const isLocked = lesson.order === 1
-                    ? (completed ? false : (locked || unitLocked))
-                    : (completed ? false : locked);
-                  const isCurrent = !isLocked && !completed;
-
-                  return (
-                    <LessonNode
-                      key={lesson.id}
-                      title={lesson.title}
-                      color={unit.color}
-                      locked={isLocked}
-                      completed={completed}
-                      current={isCurrent}
-                      onPress={() => !isLocked && handleLessonPress(lesson.id)}
-                    />
-                  );
-                })}
-
-                {/* Unit Test as a Lesson Node */}
-                {testStatus.visible && unitTest && (
-                  <LessonNode
-                    key={`test-${unit.id}`}
-                    title={`Unit ${unit.order} Test`}
-                    color={testStatus.passed ? '#10B981' : unit.color}
-                    locked={testStatus.locked}
-                    completed={testStatus.passed}
-                    current={!testStatus.locked && !testStatus.passed}
-                    icon={testStatus.passed ? '⭐' : '📝'}
-                    onPress={() => !testStatus.locked && handleUnitTestPress(unitTest.id)}
-                  />
-                )}
-
-                {/* Debug: Show if test is missing */}
-                {!unitTest && developerModeEnabled && (
-                  <LessonNode
-                    key={`test-missing-${unit.id}`}
-                    title={`⚠️ No test for ${unit.id}`}
-                    color="#EF4444"
-                    locked={true}
-                    completed={false}
-                    current={false}
-                    onPress={() => {}}
-                  />
-                )}
-              </View>
+            <View
+              key={section.id}
+              ref={(ref) => (sectionRefs.current[section.id] = ref)}
+              collapsable={false}
+            >
+              <SectionCard
+                section={section}
+                units={units}
+                completedLessons={completedLessons}
+                onLessonPress={handleLessonPress}
+                onUnitTestPress={handleUnitTestPress}
+                getLessonStatus={getLessonStatus}
+                getUnitLocked={getUnitLocked}
+                getUnitTestStatus={getUnitTestStatus}
+                unitTests={copticUnitTests}
+                isExpanded={isExpanded}
+                onToggleExpand={() => handleToggleSection(section.id)}
+              />
             </View>
           );
         })}
+
+        {/* Journey Overview Card */}
+        <Card style={styles.overviewCard}>
+          <Text style={styles.overviewTitle}>Your Journey</Text>
+          <View style={styles.overviewStats}>
+            <Text style={styles.overviewStat}>
+              {completedCount}/{totalLessons} Lessons
+            </Text>
+            <Text style={styles.overviewStat}>•</Text>
+            <Text style={styles.overviewStat}>Level {level}</Text>
+            {currentStreak > 0 && (
+              <>
+                <Text style={styles.overviewStat}>•</Text>
+                <Text style={styles.overviewStat}>🔥 {currentStreak} day streak</Text>
+              </>
+            )}
+          </View>
+          <View style={styles.overviewProgressBar}>
+            <View style={[styles.overviewProgressFill, { width: `${overallProgress}%` }]} />
+          </View>
+          <Text style={styles.overviewProgressText}>{overallProgress}% Complete</Text>
+        </Card>
 
         <View style={styles.bottomPadding} />
       </ScrollView>
@@ -582,6 +642,17 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             </TouchableOpacity>
           </View>
         </View>
+      )}
+
+      {/* Jump to Current Button */}
+      {showScrollToTop && currentSectionId && (
+        <TouchableOpacity
+          style={styles.jumpToCurrentButton}
+          onPress={handleScrollToCurrent}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.jumpToCurrentIcon}>🎯</Text>
+        </TouchableOpacity>
       )}
 
       {/* Scroll to Top Button */}

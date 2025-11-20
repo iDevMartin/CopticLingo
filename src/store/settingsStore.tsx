@@ -9,6 +9,7 @@ interface SettingsState {
   developerModeEnabled: boolean;
   darkModeEnabled: boolean;
   themeSelection: 'green' | 'blue';
+  windingPathEnabled: boolean;
   setAudioEnabled: (enabled: boolean) => void;
   setSoundEffectsEnabled: (enabled: boolean) => void;
   setNotificationsEnabled: (enabled: boolean) => void;
@@ -16,6 +17,7 @@ interface SettingsState {
   setDeveloperModeEnabled: (enabled: boolean) => void;
   setDarkModeEnabled: (enabled: boolean) => void;
   setThemeSelection: (theme: 'green' | 'blue') => void;
+  setWindingPathEnabled: (enabled: boolean) => void;
 }
 
 const initialSettings = {
@@ -26,6 +28,7 @@ const initialSettings = {
   developerModeEnabled: false,
   darkModeEnabled: false,
   themeSelection: 'blue' as 'green' | 'blue',
+  windingPathEnabled: false,
 };
 
 const SettingsContext = createContext<SettingsState | undefined>(undefined);
@@ -88,6 +91,10 @@ export const SettingsProvider: React.FC<{ children: ReactNode }> = ({ children }
     setSettings(prev => ({ ...prev, themeSelection: theme }));
   };
 
+  const setWindingPathEnabled = (enabled: boolean) => {
+    setSettings(prev => ({ ...prev, windingPathEnabled: enabled }));
+  };
+
   if (!isLoaded) {
     return null;
   }
@@ -103,6 +110,7 @@ export const SettingsProvider: React.FC<{ children: ReactNode }> = ({ children }
         setDeveloperModeEnabled,
         setDarkModeEnabled,
         setThemeSelection,
+        setWindingPathEnabled,
       }}
     >
       {children}

@@ -38,6 +38,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
     developerModeEnabled,
     darkModeEnabled,
     themeSelection,
+    windingPathEnabled,
     setAudioEnabled,
     setSoundEffectsEnabled,
     setNotificationsEnabled,
@@ -45,6 +46,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
     setDeveloperModeEnabled,
     setDarkModeEnabled,
     setThemeSelection,
+    setWindingPathEnabled,
   } = useSettingsStore();
 
   const [versionTapCount, setVersionTapCount] = useState(0);
@@ -691,6 +693,24 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
               onValueChange={setDarkModeEnabled}
               trackColor={{ false: '#d1d5db', true: '#86efac' }}
               thumbColor={darkModeEnabled ? '#22c55e' : '#f3f4f6'}
+            />
+          </View>
+
+          <View style={styles.divider} />
+
+          {/* Winding Path Toggle */}
+          <View style={styles.settingRow}>
+            <View style={styles.settingInfo}>
+              <Text style={styles.settingLabel}>Winding Path View</Text>
+              <Text style={styles.settingDescription}>
+                Show lessons in a winding path layout
+              </Text>
+            </View>
+            <Switch
+              value={windingPathEnabled}
+              onValueChange={setWindingPathEnabled}
+              trackColor={{ false: '#d1d5db', true: '#86efac' }}
+              thumbColor={windingPathEnabled ? '#22c55e' : '#f3f4f6'}
             />
           </View>
         </Card>
