@@ -1,6 +1,6 @@
 import React, { createContext, useContext, ReactNode } from 'react';
 import { useSettingsStore } from '../store/settingsStore';
-import { lightColors, darkColors, ColorScheme } from './colors';
+import { themes, ColorScheme } from './colors';
 
 interface ThemeContextType {
   colors: ColorScheme;
@@ -10,9 +10,10 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const { darkModeEnabled } = useSettingsStore();
+  const { darkModeEnabled, themeSelection } = useSettingsStore();
 
-  const colors = darkModeEnabled ? darkColors : lightColors;
+  // Select color palette based on BOTH theme and dark mode
+  const colors = themes[themeSelection][darkModeEnabled ? 'dark' : 'light'];
 
   return (
     <ThemeContext.Provider value={{ colors, isDark: darkModeEnabled }}>

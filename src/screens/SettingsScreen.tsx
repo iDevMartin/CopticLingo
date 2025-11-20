@@ -37,12 +37,14 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
     dailyReminderEnabled,
     developerModeEnabled,
     darkModeEnabled,
+    themeSelection,
     setAudioEnabled,
     setSoundEffectsEnabled,
     setNotificationsEnabled,
     setDailyReminderEnabled,
     setDeveloperModeEnabled,
     setDarkModeEnabled,
+    setThemeSelection,
   } = useSettingsStore();
 
   const [versionTapCount, setVersionTapCount] = useState(0);
@@ -537,6 +539,47 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
       color: '#FFFFFF',
       textAlign: 'center',
     },
+    themeOptions: {
+      flexDirection: 'row',
+      gap: 12,
+      marginBottom: 16,
+      paddingHorizontal: 4,
+    },
+    themeOption: {
+      flex: 1,
+      alignItems: 'center',
+      padding: 16,
+      borderRadius: 12,
+      borderWidth: 2,
+      borderColor: colors.border,
+      backgroundColor: colors.surface,
+    },
+    themeOptionSelected: {
+      borderColor: colors.primary,
+      backgroundColor: colors.surfaceSecondary,
+    },
+    themePreview: {
+      width: 48,
+      height: 48,
+      borderRadius: 24,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginBottom: 8,
+    },
+    themePreviewIcon: {
+      fontSize: 24,
+    },
+    themeOptionText: {
+      fontSize: 14,
+      fontWeight: '600',
+      color: colors.textPrimary,
+      textAlign: 'center',
+    },
+    themeCheckmark: {
+      fontSize: 20,
+      color: colors.primary,
+      marginTop: 4,
+    },
   });
 
   return (
@@ -596,6 +639,46 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
         <Card style={styles.section}>
           <Text style={styles.sectionTitle}>Appearance</Text>
 
+          {/* Theme Selection */}
+          <View style={styles.settingRow}>
+            <View style={styles.settingInfo}>
+              <Text style={styles.settingLabel}>Theme</Text>
+              <Text style={styles.settingDescription}>Choose your preferred color theme</Text>
+            </View>
+          </View>
+          <View style={styles.themeOptions}>
+            <TouchableOpacity
+              style={[
+                styles.themeOption,
+                themeSelection === 'blue' && styles.themeOptionSelected,
+              ]}
+              onPress={() => setThemeSelection('blue')}
+            >
+              <View style={[styles.themePreview, { backgroundColor: '#8247ED' }]}>
+                <Text style={styles.themePreviewIcon}>🔵</Text>
+              </View>
+              <Text style={styles.themeOptionText}>Blue Violet</Text>
+              {themeSelection === 'blue' && <Text style={styles.themeCheckmark}>✓</Text>}
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                styles.themeOption,
+                themeSelection === 'green' && styles.themeOptionSelected,
+              ]}
+              onPress={() => setThemeSelection('green')}
+            >
+              <View style={[styles.themePreview, { backgroundColor: '#58CC02' }]}>
+                <Text style={styles.themePreviewIcon}>🟢</Text>
+              </View>
+              <Text style={styles.themeOptionText}>Lingo Green</Text>
+              {themeSelection === 'green' && <Text style={styles.themeCheckmark}>✓</Text>}
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.divider} />
+
+          {/* Dark Mode Toggle */}
           <View style={styles.settingRow}>
             <View style={styles.settingInfo}>
               <Text style={styles.settingLabel}>Dark Mode</Text>

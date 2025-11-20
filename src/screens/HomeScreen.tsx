@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions, Image } from 'react-native';
 import { LessonNode, Card } from '../components';
 import { copticUnits } from '../data/lessons';
 import { copticUnitTests } from '../data/tests/unit-tests';
@@ -178,6 +178,18 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
       fontSize: 24,
       fontWeight: '700',
       color: colors.primary,
+    },
+    logo: {
+      width: 32,
+      height: 32,
+      marginRight: 10,
+    },
+    headerTitleContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    headerTextContainer: {
+      flexDirection: 'column',
     },
     headerSubtitle: {
       fontSize: 14,
@@ -411,9 +423,18 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <View>
-          <Text style={styles.headerTitle}>CopticLingo</Text>
-          <Text style={styles.headerSubtitle}>Ⲙⲁⲣⲉⲛϭⲓⲥⲃⲱ!</Text>
+        <View style={styles.headerTitleContainer}>
+          {!isSmallScreen && (
+            <Image
+              source={require('../../assets/icon.png')}
+              style={styles.logo}
+              resizeMode="contain"
+            />
+          )}
+          <View style={styles.headerTextContainer}>
+            <Text style={styles.headerTitle}>CopticLingo</Text>
+            <Text style={styles.headerSubtitle}>Ⲙⲁⲣⲉⲛϭⲓⲥⲃⲱ!</Text>
+          </View>
         </View>
         <ScrollView
           horizontal

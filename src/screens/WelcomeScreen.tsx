@@ -5,9 +5,11 @@ import {
   StyleSheet,
   ScrollView,
   Platform,
+  Image,
 } from 'react-native';
 import { Button } from '../components';
 import { useTheme } from '../theme/ThemeContext';
+import { usePwaBoxBackground } from '../theme/themeHelpers';
 
 interface WelcomeScreenProps {
   onComplete: () => void;
@@ -15,6 +17,7 @@ interface WelcomeScreenProps {
 
 export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onComplete }) => {
   const { colors } = useTheme();
+  const pwaBoxBg = usePwaBoxBackground();
   const [isMobileWeb, setIsMobileWeb] = useState(false);
   const [browserName, setBrowserName] = useState<'safari' | 'chrome' | 'other'>('other');
 
@@ -84,7 +87,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onComplete }) => {
     },
     pwaBox: {
       width: '100%',
-      backgroundColor: '#10B98120',
+      backgroundColor: pwaBoxBg,
       padding: 20,
       borderRadius: 16,
       marginBottom: 16,
@@ -118,12 +121,23 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onComplete }) => {
       lineHeight: 22,
       marginBottom: 4,
     },
+    logo: {
+      width: 100,
+      height: 100,
+      alignSelf: 'center',
+      marginBottom: 24,
+    },
   });
 
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.content}>
+          <Image
+            source={require('../../assets/icon.png')}
+            style={styles.logo}
+            resizeMode="contain"
+          />
           <Text style={styles.title}>Welcome to CopticLingo!</Text>
           <Text style={styles.copticTitle}>Ⲙⲁⲣⲉⲛϭⲓⲥⲃⲱ!</Text>
 

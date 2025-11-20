@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useTheme } from '../theme/ThemeContext';
+import { useCurrentNodeBorderColor } from '../theme/themeHelpers';
 
 interface LessonNodeProps {
   title: string;
@@ -22,6 +23,7 @@ export const LessonNode: React.FC<LessonNodeProps> = ({
   onPress,
 }) => {
   const { colors } = useTheme();
+  const currentBorderColor = useCurrentNodeBorderColor();
 
   const styles = StyleSheet.create({
     container: {
@@ -39,7 +41,7 @@ export const LessonNode: React.FC<LessonNodeProps> = ({
       borderColor: 'transparent',
     },
     currentNode: {
-      borderColor: '#FFD700',
+      borderColor: currentBorderColor,
       borderWidth: 4,
     },
     icon: {
@@ -62,7 +64,7 @@ export const LessonNode: React.FC<LessonNodeProps> = ({
       <TouchableOpacity
         style={[
           styles.node,
-          { backgroundColor: locked ? '#E5E5E5' : color },
+          { backgroundColor: locked ? colors.borderLight : color },  // Use theme color instead
           current && styles.currentNode,
         ]}
         onPress={onPress}

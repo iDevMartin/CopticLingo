@@ -3,6 +3,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { Exercise } from '../../types';
 import { Button } from '../Button';
 import { useTheme } from '../../theme/ThemeContext';
+import { useMatchingPairColors } from '../../theme/themeHelpers';
 
 interface MatchingExerciseProps {
   exercise: Exercise;
@@ -10,16 +11,6 @@ interface MatchingExerciseProps {
   showResult: boolean;
   onMatchesChange?: (allMatched: boolean) => void;
 }
-
-// Colors for matched pairs (excluding red/green)
-const PAIR_COLORS = [
-  { bg: '#E3F2FD', border: '#2196F3' }, // Blue
-  { bg: '#F3E5F5', border: '#9C27B0' }, // Purple
-  { bg: '#FFF3E0', border: '#FF9800' }, // Orange
-  { bg: '#E0F2F1', border: '#009688' }, // Teal
-  { bg: '#FFF9C4', border: '#FBC02D' }, // Yellow
-  { bg: '#FCE4EC', border: '#E91E63' }, // Pink
-];
 
 // Utility function to shuffle array
 function shuffleArray<T>(array: T[]): T[] {
@@ -42,6 +33,7 @@ export const MatchingExercise: React.FC<MatchingExerciseProps> = ({
   const [matches, setMatches] = useState<{ [copticIndex: number]: number }>({});
   const [hasCalledOnComplete, setHasCalledOnComplete] = useState(false);
   const { colors } = useTheme();
+  const PAIR_COLORS = useMatchingPairColors();
 
   // Shuffle both Coptic and English options once when exercise changes
   const shuffledCoptic = useMemo(() => {

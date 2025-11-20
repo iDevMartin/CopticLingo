@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Switch } from 'react-native';
 import { Button, Card } from '../components';
 import { useTheme } from '../theme/ThemeContext';
+import { useOnboardingStepColors } from '../theme/themeHelpers';
+import { useSettingsStore } from '../store/settingsStore';
 
 const { width } = Dimensions.get('window');
 
@@ -17,51 +19,62 @@ interface OnboardingStep {
   color: string;
 }
 
-const onboardingSteps: OnboardingStep[] = [
-  {
-    id: 1,
-    icon: '🎓',
-    title: 'Learn Through Lessons',
-    description:
-      'Progress through carefully structured lessons covering the Coptic alphabet, grammar, and Biblical texts. Each lesson includes multiple exercise types to reinforce learning.',
-    color: '#58CC02',
-  },
-  {
-    id: 2,
-    icon: '⚡',
-    title: 'Practice Makes Perfect',
-    description:
-      'Complete 7 different types of exercises: multiple choice, fill-in-the-blank, translation, matching, sentence building, listening, and speaking practice.',
-    color: '#3b82f6',
-  },
-  {
-    id: 3,
-    icon: '📊',
-    title: 'Track Your Progress',
-    description:
-      'Earn XP for each lesson completed, level up, maintain daily streaks, and unlock achievements as you master the Coptic language.',
-    color: '#8b5cf6',
-  },
-  {
-    id: 4,
-    icon: '🧠',
-    title: 'Spaced Repetition',
-    description:
-      'Review exercises at optimal intervals to maximize retention. Our spaced repetition system helps you remember what you learn long-term.',
-    color: '#f59e0b',
-  },
-  {
-    id: 5,
-    icon: '🏆',
-    title: 'Unlock Achievements',
-    description:
-      'Complete challenges to unlock special achievements. Track milestones like completing your first unit, maintaining streaks, or mastering the alphabet!',
-    color: '#ec4899',
-  },
-];
-
 export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
   const [currentStep, setCurrentStep] = useState(0);
+  const stepColors = useOnboardingStepColors();
+  const { themeSelection, darkModeEnabled, setThemeSelection, setDarkModeEnabled } = useSettingsStore();
+
+  // Use theme-aware colors for steps
+  const onboardingSteps: OnboardingStep[] = [
+    {
+      id: 1,
+      icon: '🎓',
+      title: 'Learn Through Lessons',
+      description:
+        'Progress through carefully structured lessons covering the Coptic alphabet, grammar, and Biblical texts. Each lesson includes multiple exercise types to reinforce learning.',
+      color: stepColors[0],
+    },
+    {
+      id: 2,
+      icon: '⚡',
+      title: 'Practice Makes Perfect',
+      description:
+        'Complete 7 different types of exercises: multiple choice, fill-in-the-blank, translation, matching, sentence building, listening, and speaking practice.',
+      color: stepColors[1],
+    },
+    {
+      id: 3,
+      icon: '📊',
+      title: 'Track Your Progress',
+      description:
+        'Earn XP for each lesson completed, level up, maintain daily streaks, and unlock achievements as you master the Coptic language.',
+      color: stepColors[2],
+    },
+    {
+      id: 4,
+      icon: '🧠',
+      title: 'Spaced Repetition',
+      description:
+        'Review exercises at optimal intervals to maximize retention. Our spaced repetition system helps you remember what you learn long-term.',
+      color: stepColors[3],
+    },
+    {
+      id: 5,
+      icon: '🏆',
+      title: 'Unlock Achievements',
+      description:
+        'Complete challenges to unlock special achievements. Track milestones like completing your first unit, maintaining streaks, or mastering the alphabet!',
+      color: stepColors[4],
+    },
+    {
+      id: 6,
+      icon: '🎨',
+      title: 'Choose Your Style',
+      description:
+        'Customize your learning experience with your preferred theme and appearance. You can always change these settings later.',
+      color: stepColors[0],
+    },
+  ];
 
   const handleNext = () => {
     if (currentStep < onboardingSteps.length - 1) {
@@ -203,6 +216,83 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
     navButtonFull: {
       flex: 1,
     },
+    customizationContainer: {
+      width: '100%',
+      gap: 20,
+      marginTop: 20,
+    },
+    themeSelector: {
+      gap: 12,
+    },
+    sectionLabel: {
+      fontSize: 16,
+      fontWeight: '700',
+      color: colors.textPrimary,
+      marginBottom: 8,
+    },
+    themeOptions: {
+      flexDirection: 'row',
+      gap: 12,
+    },
+    themeOption: {
+      flex: 1,
+      alignItems: 'center',
+      padding: 16,
+      borderRadius: 12,
+      borderWidth: 2,
+      borderColor: colors.border,
+      backgroundColor: colors.surface,
+    },
+    themeOptionSelected: {
+      borderColor: colors.primary,
+      backgroundColor: colors.surfaceSecondary,
+    },
+    themePreview: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginBottom: 8,
+    },
+    themePreviewIcon: {
+      fontSize: 20,
+    },
+    themeOptionText: {
+      fontSize: 14,
+      fontWeight: '600',
+      color: colors.textPrimary,
+      textAlign: 'center',
+      marginBottom: 4,
+    },
+    themeCheckmark: {
+      fontSize: 16,
+      color: colors.primary,
+    },
+    darkModeRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      padding: 16,
+      borderRadius: 12,
+      backgroundColor: colors.surface,
+      borderWidth: 2,
+      borderColor: colors.border,
+    },
+    darkModeInfo: {
+      flex: 1,
+      marginRight: 16,
+    },
+    darkModeLabel: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: colors.textPrimary,
+      marginBottom: 4,
+    },
+    darkModeDescription: {
+      fontSize: 13,
+      color: colors.textSecondary,
+    },
   });
 
   return (
@@ -276,6 +366,64 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
             <View style={styles.statItem}>
               <Text style={styles.statValue}>0</Text>
               <Text style={styles.statLabel}>Streak</Text>
+            </View>
+          </View>
+        )}
+
+        {/* Theme Customization for step 6 */}
+        {currentStep === 5 && (
+          <View style={styles.customizationContainer}>
+            {/* Theme Selection */}
+            <View style={styles.themeSelector}>
+              <Text style={styles.sectionLabel}>Choose Theme</Text>
+              <View style={styles.themeOptions}>
+                <TouchableOpacity
+                  style={[
+                    styles.themeOption,
+                    themeSelection === 'blue' && styles.themeOptionSelected,
+                  ]}
+                  onPress={() => setThemeSelection('blue')}
+                >
+                  <View style={[styles.themePreview, { backgroundColor: '#8247ED' }]}>
+                    <Text style={styles.themePreviewIcon}>🔵</Text>
+                  </View>
+                  <Text style={styles.themeOptionText}>Blue Violet</Text>
+                  {themeSelection === 'blue' && <Text style={styles.themeCheckmark}>✓</Text>}
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={[
+                    styles.themeOption,
+                    themeSelection === 'green' && styles.themeOptionSelected,
+                  ]}
+                  onPress={() => setThemeSelection('green')}
+                >
+                  <View style={[styles.themePreview, { backgroundColor: '#58CC02' }]}>
+                    <Text style={styles.themePreviewIcon}>🟢</Text>
+                  </View>
+                  <Text style={styles.themeOptionText}>Lingo Green</Text>
+                  {themeSelection === 'green' && <Text style={styles.themeCheckmark}>✓</Text>}
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            {/* Dark Mode Toggle */}
+            <View style={styles.themeSelector}>
+              <Text style={styles.sectionLabel}>Appearance</Text>
+              <View style={styles.darkModeRow}>
+                <View style={styles.darkModeInfo}>
+                  <Text style={styles.darkModeLabel}>Dark Mode</Text>
+                  <Text style={styles.darkModeDescription}>
+                    Reduce eye strain in low light
+                  </Text>
+                </View>
+                <Switch
+                  value={darkModeEnabled}
+                  onValueChange={setDarkModeEnabled}
+                  trackColor={{ false: '#d1d5db', true: '#86efac' }}
+                  thumbColor={darkModeEnabled ? '#22c55e' : '#f3f4f6'}
+                />
+              </View>
             </View>
           </View>
         )}
